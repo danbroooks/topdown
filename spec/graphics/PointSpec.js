@@ -115,6 +115,83 @@ describe("Point", function() {
     });
   });
 
+  describe("Instance method rotate", function() {
+
+    var pt;
+    var validDegrees = 10;
+    var validAxis = [10, 20];
+
+    beforeEach(function () {
+      pt = Point(0, 20);
+    });
+
+    it("should throw when arg axis passed is invalid", function(){
+
+      expect(function() {
+        pt.rotate('10', validDegrees);
+          }).toThrowError();
+
+      expect(function() {
+        pt.rotate(10, validDegrees);
+          }).toThrowError();
+
+      expect(function() {
+        pt.rotate([10], validDegrees);
+          }).toThrowError();
+    });
+
+    it("should not throw when arg axis is either Point or an array of 2 values", function(){
+
+      expect(function() {
+        pt.rotate([1, 2], validDegrees);
+          }).not.toThrowError();
+
+      expect(function() {
+        pt.rotate(Point(1, 2), validDegrees);
+          }).not.toThrowError();
+    });
+
+    it("should throw when arg theta is not numeric", function(){
+
+      expect(function() {
+        pt.rotate(validAxis, '0');
+          }).toThrowError();
+    });
+
+    it("should accept alternative argument, single number to rotate around [0,0]", function(){
+
+      expect(function() {
+        pt.rotate(10);
+          }).not.toThrowError();
+
+      expect(function(){
+        pt.rotate("some string");
+          }).toThrowError();
+
+      expect(function(){
+        pt.rotate(Point());
+          }).toThrowError();
+    });
+
+    it("should rotate one point around another", function(){
+      pt.rotate(360);
+      expect(pt.x).toEqual(0);
+      expect(pt.y).toEqual(20);
+
+      pt.rotate(180);
+      expect(pt.x).toEqual(0);
+      expect(pt.y).toEqual(-20);
+
+      pt.rotate(-90);
+      expect(pt.x).toEqual(-20);
+      expect(pt.y).toEqual(0);
+
+      pt.rotate(-45);
+      expect(Number( pt.x.toFixed(4) )).toEqual(-14.1421);
+      expect(Number( pt.y.toFixed(4) )).toEqual(14.1421);
+    });
+  });
+
   describe("Static method Clone", function() {
 
     it("should return a Point instance", function(){
