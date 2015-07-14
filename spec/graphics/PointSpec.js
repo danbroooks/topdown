@@ -57,38 +57,49 @@ describe("Point", function() {
 
   describe("Instance method shift", function() {
 
+    var pt;
+
     beforeEach(function(){
-      this.pt = Point(30, 20);
+      pt = Point(30, 20);
+    });
+
+    it("should throw when passed invalid args", function(){
+
+      expect(function() {
+        pt.shift('10', 10);
+          }).toThrowError();
     });
 
     it("should shift based on two numbers", function() {
-      this.pt.shift(-10, 20);
+      pt.shift(-10, 20);
 
-      expect(this.pt.x).toEqual(20);
-      expect(this.pt.y).toEqual(40);
+      expect(pt.x).toEqual(20);
+      expect(pt.y).toEqual(40);
     });
 
     it("should shift from another point instance", function() {
-      this.pt.shift( Point(40, -30) );
-      expect(this.pt.x).toEqual(70);
-      expect(this.pt.y).toEqual(-10);
+      pt.shift( Point(40, -30) );
+      expect(pt.x).toEqual(70);
+      expect(pt.y).toEqual(-10);
     });
 
     it("should be chainable", function() {
-      expect(this.pt.shift(10, 10) instanceof Point.Constructor).toBeTruthy();
+      expect(pt.shift(10, 10) instanceof Point.Constructor).toBeTruthy();
     });
   });
 
   describe("Instance method invert", function() {
 
+    var pt;
+
     beforeEach(function(){
-      this.pt = Point(-10, 20);
+      pt = Point(-10, 20);
     });
 
     it("should invert the point values", function() {
-      this.pt.invert();
-      expect(this.pt.x).toEqual(10);
-      expect(this.pt.y).toEqual(-20);
+      pt.invert();
+      expect(pt.x).toEqual(10);
+      expect(pt.y).toEqual(-20);
     });
 
     it("should ensure 0 is not returned as -0", function(){
@@ -100,7 +111,7 @@ describe("Point", function() {
     });
 
     it("should be chainable", function() {
-      expect(this.pt.invert() instanceof Point.Constructor).toBeTruthy();
+      expect(pt.invert() instanceof Point.Constructor).toBeTruthy();
     });
   });
 
