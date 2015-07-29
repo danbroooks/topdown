@@ -5,10 +5,11 @@
   "scripts": {
     "test": "gulp jasmine"
   },
+  "dependencies": {
+    "lodash": "^3.10.0"
+  },
   "devDependencies": {
     "gulp": "^3.9.0",
     "gulp-jasmine": "^2.0.1",
-    "lodash": "^3.10.0"
-  },
-  "dependencies": {}
+  }
 }
