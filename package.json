@@ -9,11 +9,21 @@
     "lodash": "^3.10.0"
   },
   "devDependencies": {
+    "browserify": "^11.0.0",
     "gulp": "^3.9.0",
+    "gulp-concat": "^2.6.0",
     "gulp-jasmine": "^2.0.1",
+    "gulp-sourcemaps": "^1.5.2",
+    "gulp-streamify": "0.0.5",
+    "gulp-uglify": "^1.2.0",
+    "gulp-util": "^3.0.6",
     "jasmine-spec-reporter": "^2.4.0",
     "kefir": "^2.7.2",
     "proxyquire": "^1.6.0",
-    "sinon": "^1.15.4"
+    "sinon": "^1.15.4",
+    "streamify": "^0.2.4",
+    "vinyl-buffer": "^1.0.0",
+    "vinyl-source-stream": "^1.1.0",
+    "watchify": "^3.3.0"
   }
 }
