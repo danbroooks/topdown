@@ -1,5 +1,10 @@
 {
   "name": "topdown",
   "version": "0.1.0",
-  "description": "A 2D topdown game framework built with node.js"
+  "description": "A 2D topdown game framework built with node.js",
+  "devDependencies": {
+    "gulp": "^3.9.0",
+    "lodash": "^3.10.0"
+  },
+  "dependencies": {}
 }
