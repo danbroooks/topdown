@@ -4,6 +4,7 @@
   "description": "A 2D topdown game framework built with node.js",
   "devDependencies": {
     "gulp": "^3.9.0",
+    "gulp-jasmine": "^2.0.1",
     "lodash": "^3.10.0"
   },
   "dependencies": {}
