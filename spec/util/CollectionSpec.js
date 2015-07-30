@@ -44,6 +44,30 @@ describe("Collection", function() {
       c.add({});
       expect(c.length).toEqual(1);
     });
+
+    it("should only add items that pass the criteria of the filter", function(){
+      var c = new Collection(stringFilter);
+      c.add(12);
+      c.add("hello");
+      c.add(new Collection());
+      c.add("world");
+      expect(c.length).toEqual(2);
+      expect(c.items).toContain('hello');
+      expect(c.items).not.toContain(12);
+    });
+
+    it("should only add items that pass the criteria of the filter", function(){
+      var c = new Collection(function(obj){
+        return obj instanceof Collection;
+      });
+      c.add(12);
+      c.add("hello");
+      c.add(new Collection());
+      c.add("world");
+      expect(c.length).toEqual(1);
+      expect(c.items).not.toContain('hello');
+      expect(c.items[0]).toEqual(jasmine.any(Collection));
+    });
   });
 
 });
