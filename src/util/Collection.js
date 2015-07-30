@@ -15,6 +15,11 @@ Collection.prototype.add = function(obj) {
   this.length = this.items.length;
 };
 
+Collection.prototype.remove = function(fn) {
+  this.items = _.reject(this.items, fn);
+  this.length = this.items.length;
+};
+
 Collection.DefaultFilter = _.constant(true);
 
 var Factory = function(filter){
