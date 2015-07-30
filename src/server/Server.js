@@ -1,10 +1,24 @@
 
-var Server = function(){
+var http = require('http');
 
+var Server = function(port){
+  this.port = port;
 };
 
-var Factory = function(){
-  return new Server();
+Server.prototype.listen = function() {
+  var server = http.createServer(function(req, res){
+
+  });
+
+  server.listen(this.port);
+};
+
+var Factory = function(port){
+  return new Server(port);
+};
+
+Factory.Listen = function(port) {
+  return Factory(port).listen();
 };
 
 Factory.Constructor = Server;
