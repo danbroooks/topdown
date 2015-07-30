@@ -2,6 +2,10 @@ describe("Collection", function() {
 
   var Module = require('../../src/util/Collection');
 
+  function stringFilter(val){
+    return typeof val == 'string';
+  }
+
   describe("Factory", function () {
 
     var Factory = Module;
@@ -16,10 +20,6 @@ describe("Collection", function() {
 
       c = Factory();
       expect(c.filter).toEqual(Constructor.DefaultFilter);
-
-      function stringFilter(val){
-        return typeof val == 'string';
-      }
 
       c = Factory(stringFilter);
       expect(c.filter).toEqual(stringFilter);
