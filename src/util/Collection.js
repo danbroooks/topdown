@@ -20,6 +20,13 @@ Collection.prototype.remove = function(fn) {
   this.length = this.items.length;
 };
 
+Collection.prototype.each = function(cb) {
+  var items = this.items;
+  return _.each(items, function(item, i){
+    items[i] = cb(item);
+  });
+};
+
 Collection.DefaultFilter = _.constant(true);
 
 var Factory = function(filter){
