@@ -16,7 +16,7 @@ describe("FileSystem", function() {
     });
   });
 
-  describe(".find(path, success, failure)", function() {
+  describe(".exists(path, success, failure)", function() {
 
     var fs = FileSystem();
 
@@ -33,14 +33,14 @@ describe("FileSystem", function() {
 
     it('should execute success callback on success', function () {
       fsMock.exists = returns(true);
-      fs.find('/index.html', this.success, this.failure);
+      fs.exists('/index.html', this.success, this.failure);
       expect(this.success.called).toBeTruthy();
       expect(this.failure.called).toBeFalsy();
     });
 
     it('should execute failure callback on failure', function () {
       fsMock.exists = returns(false);
-      fs.find('/index.html', this.success, this.failure);
+      fs.exists('/index.html', this.success, this.failure);
       expect(this.success.called).toBeFalsy();
       expect(this.failure.called).toBeTruthy();
     });
