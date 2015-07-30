@@ -70,4 +70,29 @@ describe("Collection", function() {
     });
   });
 
+  describe(".remove(fn)", function() {
+
+    var Collection = Module.Constructor;
+
+    it("should remove elements from list based on function passed to method", function() {
+      var c = new Collection();
+      c.add(1);
+      c.add(1);
+      c.add(2);
+      c.add(5);
+
+      c.remove(function(val){
+        return val > 4;
+      });
+
+      expect(c.length).toEqual(3);
+
+      c.remove(function(val){
+        return val == 1;
+      });
+
+      expect(c.length).toEqual(1);
+    });
+  });
+
 });
