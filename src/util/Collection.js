@@ -8,7 +8,10 @@ var Collection = function(filter){
 };
 
 Collection.prototype.add = function(obj) {
-  this.items.push(obj);
+  if (this.filter(obj)) {
+    this.items.push(obj);
+  }
+
   this.length = this.items.length;
 };
 
