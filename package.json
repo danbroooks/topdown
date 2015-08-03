@@ -1,0 +1,5 @@
+{
+  "name": "topdown",
+  "version": "0.1.0",
+  "description": "A 2D topdown game framework built with node.js"
+}
