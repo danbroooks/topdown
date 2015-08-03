@@ -30,35 +30,28 @@ describe("Point", function() {
 
       expect(function () {
         var ptTooShortArray = Point([10]);
-      }).toThrow(
-        new Error('Point was passed invalid arguments')
-      );
+          }).toThrowError('Point was passed invalid arguments');
     });
 
     it("should throw exception when passed too long an array", function() {
 
       expect(function () {
         var ptTooLongArray = Point([10, 20, 30]);
-      }).toThrow(
-        new Error('Point was passed invalid arguments')
-      );
+          }).toThrowError('Point was passed invalid arguments');
     });
 
     it("should throw exception when not passed enough arguments", function() {
 
       expect(function () {
         var ptNotEnoughArgs = Point(10);
-      }).toThrow(
-        new Error('Point was passed invalid arguments')
-      );
+          }).toThrowError('Point was passed invalid arguments');
     });
 
     it("should throw exception when passed too many arguments", function() {
+
       expect(function(){
         var ptTooManyArgs = Point(10, 20, 30);
-      }).toThrow(
-        new Error('Point was passed invalid arguments')
-      );
+          }).toThrowError('Point was passed invalid arguments');
     });
   });
 
@@ -128,14 +121,13 @@ describe("Point", function() {
 
     it("should throw error when not passed a point instance", function(){
 
-      var err = new Error("Point.Clone must be passed an instance of Point");
       expect(function(){
         Point.Clone(null);
-      }).toThrow(err);
+          }).toThrowError("Point.Clone must be passed an instance of Point");
 
       expect(function(){
         Point.Clone(22);
-      }).toThrow(err);
+          }).toThrowError("Point.Clone must be passed an instance of Point");
     });
   });
 
