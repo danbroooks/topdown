@@ -100,23 +100,36 @@ describe("Collection", function () {
     var Collection = Module.Constructor;
 
     beforeEach(function () {
-      var c = new Collection();
-      c.add(1);
-      c.add(2);
-      c.add(3);
+      var c = new Collection(stringFilter);
+      c.add('hello');
+      c.add('there');
+      c.add('world');
       this.c = c;
     });
 
-    it("should iterate over elements applying passed predicate", function () {
+    it("should iterate over elements applying passed predicate", function() {
       this.c.each(function (val) {
-        val += 1;
+        val += '.';
         return val;
       });
 
-      expect(this.c.items[0]).toEqual(2);
-      expect(this.c.items[1]).toEqual(3);
-      expect(this.c.items[2]).toEqual(4);
+      expect(this.c.items[0]).toEqual('hello.');
+      expect(this.c.items[1]).toEqual('there.');
+      expect(this.c.items[2]).toEqual('world.');
     });
+
+    it("should ensure items conform to filter if set following .each()", function() {
+      var c = this.c;
+
+      expect(function(){
+
+        c.each(function(){
+          return 20;
+        });
+
+      }).toThrow(jasmine.any(Collection.FilterMismatchError));
+    });
+    
   });
 
 });
