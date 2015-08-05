@@ -20,15 +20,27 @@ Collection.prototype.remove = function (fn) {
 };
 
 Collection.prototype.each = function (cb) {
-  var items = this.items;
-  return _.each(items, function (item, i) {
-    items[i] = cb(item);
+  var self = this;
+  return _.each(self.items, function (item, i){
+    var val = cb(item);
+    if (self.filter(val)) {
+      self.items[i] = val;
+    } else {
+      throw new Collection.FilterMismatchError();
+    }
   });
 };
 
 Collection.DefaultFilter = _.constant(true);
 
-var Factory = function (filter) {
+Collection.FilterMismatchError = function(msg) {
+  this.message = msg || '';
+};
+
+Collection.FilterMismatchError.prototype = Object.create(Error.prototype);
+Collection.FilterMismatchError.prototype.constructor = Collection.FilterMismatchError;
+
+var Factory = function (filter){
   return new Collection(filter);
 };
 
