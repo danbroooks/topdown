@@ -95,4 +95,28 @@ describe("Collection", function() {
     });
   });
 
+  describe(".each(fn)", function() {
+
+    var Collection = Module.Constructor;
+
+    beforeEach(function(){
+      var c = new Collection();
+      c.add(1);
+      c.add(2);
+      c.add(3);
+      this.c = c;
+    });
+
+    it("should iterate over elements applying passed predicate", function() {
+      this.c.each(function(val){
+        val += 1;
+        return val;
+      });
+
+      expect(this.c.items[0]).toEqual(2);
+      expect(this.c.items[1]).toEqual(3);
+      expect(this.c.items[2]).toEqual(4);
+    });
+  });
+
 });
