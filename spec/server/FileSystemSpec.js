@@ -63,6 +63,9 @@ describe("FileSystem", function() {
         cb(exists);
       };
 
+      fsMock.readFile = function (path, o, cb) {
+        cb(path, 'hello world');
+      };
     });
 
     it('should look in multiple locations for files', function() {
@@ -79,6 +82,18 @@ describe("FileSystem", function() {
       fs.find('styles.css', ['project', 'core'], this.success, this.failure);
       expect(this.success.called).toBeFalsy();
       expect(this.failure.called).toBeTruthy();
+    });
+
+    it('should prefer the result from the location that comes first in the array', function() {
+      fs.find('script.js', ['project', 'core'], this.success, this.failure);
+      expect(
+        this.success.calledWith(join('project', 'script.js'))
+      ).toBeTruthy();
+    });
+
+    it('should pass contents of file to callback on success', function() {
+      fs.find('script.js', ['core'], this.success, this.failure);
+      expect(this.success.calledWith(join('core', 'script.js'), 'hello world')).toBeTruthy();
     });
 
   });
