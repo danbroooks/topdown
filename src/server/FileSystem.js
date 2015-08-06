@@ -7,8 +7,11 @@ var FileSystem = function(){};
 FileSystem.prototype.find = function (path, locations, success, failure) {
   var self = this;
   var location = locations.shift();
-  this.exists(join(location, path), function () {
-    success();
+  var file = join(location, path);
+  this.exists(file, function () {
+    fs.readFile(file, "binary", function (err, contents) {
+      success(file, contents);
+    });
   }, function () {
     if (locations.length) {
       self.find(path, locations, success, failure);
@@ -20,7 +23,7 @@ FileSystem.prototype.find = function (path, locations, success, failure) {
 
 FileSystem.prototype.exists = function (path, success, failure) {
 
-  fs.exists(path, function(exists) {
+  fs.exists(path, function (exists) {
     if (exists) {
       success();
     } else {
