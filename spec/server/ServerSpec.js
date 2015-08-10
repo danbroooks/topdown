@@ -34,7 +34,7 @@ describe("Server", function() {
   });
 
   describe(".listen(port)", function(){
-    it("should ", function(){
+    it("should listen on port passed", function(){
       var listen = sinon.stub();
       var createServer = sinon.stub();
 
@@ -48,6 +48,11 @@ describe("Server", function() {
       s.listen();
 
       expect(listen.calledWith(88)).toBeTruthy();
+    });
+
+    it("should return server instance", function() {
+      var s = Server(88).listen();
+      expect(s instanceof Server.Constructor).toBeTruthy();
     });
   });
 
