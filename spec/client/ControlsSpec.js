@@ -1,5 +1,7 @@
 describe("Controls", function() {
 
+  var sinon = require('sinon');
+
   var Controls = require('../../src/client/Controls');
   var Point = require('../../src/graphics/Point');
   var doc, win;
@@ -64,13 +66,18 @@ describe("Controls", function() {
 
     var c;
 
-    beforeEach(function(){
-      win.onkeydown = function() {};
-      win.onkeyup = function() {};
+    beforeEach(function () {
+      this.clock = sinon.useFakeTimers();
+      win.onkeydown = function () {};
+      win.onkeyup = function () {};
       c = Controls(win, doc);
     });
 
-    it("should be an immutable property", function() {
+    afterEach(function () {
+      this.clock.restore();
+    })
+
+    it("should be an immutable property", function (done) {
 
       c.keystream = {};
 
@@ -80,9 +87,11 @@ describe("Controls", function() {
 
       win.onkeydown({ which: 15 });
 
+      this.clock.tick(400);
+      done();
     });
 
-    it("should track user's keypresses", function() {
+    it("should track user's keypresses", function (done) {
 
       var keys = [ 12, 18 ];
 
@@ -94,6 +103,27 @@ describe("Controls", function() {
       win.onkeydown({ which: 15 });
       win.onkeydown({ which: 18 });
       win.onkeyup({ which: 15 });
+
+      this.clock.tick(400);
+      done();
+    });
+
+    it("should be configurable to only listen to certain keys", function (done) {
+
+      c.configure({
+        'up': 38
+      });
+
+      c.keystream.onValue(function (val) {
+        expect(val).toEqual([ 38 ]);
+      });
+
+      win.onkeydown({ which: 42 });
+      win.onkeydown({ which: 38 });
+      win.onkeydown({ which: 39 });
+
+      this.clock.tick(400);
+      done();
     });
 
   });
