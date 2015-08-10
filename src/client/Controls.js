@@ -6,10 +6,15 @@ var Point = require('../graphics/Point');
 
 var Controls = function(win, doc) {
 
+  var self = this;
   var keystate = {};
 
   win.onkeydown = function (key) {
-    keystate[key.which] = true;
+    var config = self.config;
+
+    if (!config || _.contains(_.values(config), key.which)) {
+      keystate[key.which] = true;
+    }
   };
 
   win.onkeyup = function (key) {
@@ -39,6 +44,10 @@ var Controls = function(win, doc) {
   });
 
   doc.oncontextmenu = _.constant(false);
+};
+
+Controls.prototype.configure = function(config) {
+  this.config = config;
 };
 
 var Factory = function(win, doc){
