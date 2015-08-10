@@ -2,10 +2,11 @@
 var http = require('http');
 
 var Server = function(port){
-  this.port = port;
+  this.port = parseInt(port, 10);
 };
 
 Server.prototype.listen = function() {
+
   var server = http.createServer(function(req, res){
 
   });
