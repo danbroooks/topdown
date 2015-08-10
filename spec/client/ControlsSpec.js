@@ -70,37 +70,32 @@ describe("Controls", function() {
       c = Controls(win, doc);
     });
 
+    it("should be an immutable property", function() {
+
+      c.keystream = {};
+
+      c.keystream.onValue(function (val) {
+        expect(val).toEqual([ 15 ]);
+      });
+
+      win.onkeydown({ which: 15 });
+
+    });
 
     it("should track user's keypresses", function() {
 
-      var keys;
+      var keys = [ 12, 18 ];
 
-      keys = { 12: true };
-      expect(c.keystate).not.toEqual(jasmine.objectContaining(keys));
+      c.keystream.onValue(function (val) {
+        expect(val).toEqual(keys);
+      });
+
       win.onkeydown({ which: 12 });
-      expect(c.keystate).toEqual(jasmine.objectContaining(keys));
-
       win.onkeydown({ which: 15 });
-      keys = { 12: true, 15: true };
-      expect(c.keystate).toEqual(jasmine.objectContaining(keys));
-
-      win.onkeyup({ which: 12 });
-      keys = { 15: true };
-      expect(c.keystate).toEqual(jasmine.objectContaining(keys));
+      win.onkeydown({ which: 18 });
+      win.onkeyup({ which: 15 });
     });
 
-    it("should be an immutable property", function() {
-
-      var keys = { 15: true };
-      win.onkeydown({ which: 15 });
-      expect(c.keystate).toEqual(jasmine.objectContaining(keys));
-
-      var fakestate = { 11: true };
-      c.keystate = fakestate;
-
-      expect(c.keystate).toEqual(jasmine.objectContaining(keys));
-      expect(c.keystate).not.toEqual(jasmine.objectContaining(fakestate));
-    });
   });
 
 });
