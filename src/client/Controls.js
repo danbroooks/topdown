@@ -3,7 +3,7 @@ var _ = require('lodash');
 
 var Point = require('../graphics/Point');
 
-var Controls = function(win, doc){
+var Controls = function(win, doc) {
 
   var mouse = Point(0, 0);
   var keystate = {};
@@ -36,6 +36,8 @@ var Factory = function(win, doc){
 };
 
 Factory.Constructor = Controls;
+
+Factory.Keymap = require('../Keymap');
 
 module.exports = Factory;
 
