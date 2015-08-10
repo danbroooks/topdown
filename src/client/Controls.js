@@ -1,12 +1,12 @@
 
 var _ = require('lodash');
 
-var Controls = function(doc){
+var Controls = function(win, doc){
   doc.oncontextmenu = _.constant(false);
 };
 
-var Factory = function(doc){
-  return new Controls(doc);
+var Factory = function(win, doc){
+  return new Controls(win, doc);
 };
 
 Factory.Constructor = Controls;
