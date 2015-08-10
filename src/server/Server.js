@@ -11,6 +11,8 @@ Server.prototype.listen = function() {
   });
 
   server.listen(this.port);
+
+  return this;
 };
 
 var Factory = function(port){
