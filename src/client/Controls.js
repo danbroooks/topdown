@@ -1,5 +1,6 @@
 
 var _ = require('lodash');
+var Kefir = require('kefir');
 
 var Point = require('../graphics/Point');
 
@@ -15,8 +16,16 @@ var Controls = function(win, doc) {
     delete keystate[key.which];
   };
 
-  this.__defineGetter__('keystate', function(){
-    return keystate;
+  var keystream = Kefir.fromPoll(30, function(){
+    return _.keys(keystate).map(function(val){
+      return parseInt(val, 10);
+    });
+  });
+
+  this.__defineGetter__('keystream', function(){
+    return keystream.skipDuplicates(function(a, b){
+      return _.xor(a, b).length == 0;
+    }).throttle(300);
   });
 
   var mouse = Point(0, 0);

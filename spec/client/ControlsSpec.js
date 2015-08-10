@@ -60,7 +60,7 @@ describe("Controls", function() {
     });
   });
 
-  describe("Keystate", function () {
+  describe("Keystream", function () {
 
     var c;
 

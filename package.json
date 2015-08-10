@@ -12,6 +12,7 @@
     "gulp": "^3.9.0",
     "gulp-jasmine": "^2.0.1",
     "jasmine-spec-reporter": "^2.4.0",
+    "kefir": "^2.7.2",
     "proxyquire": "^1.6.0",
     "sinon": "^1.15.4"
   }
