@@ -16,6 +16,13 @@ describe("Server", function() {
     });
   });
 
+  describe("Constructor", function () {
+    it("should parse the port argument as an int", function () {
+      var s = new Server.Constructor('12');
+      expect(s.port).toEqual(12);
+    });
+  });
+
   describe(".Listen static method", function(){
     it("should listen on the port passed", function(){
       var listen = sinon.stub();
