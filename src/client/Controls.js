@@ -5,12 +5,7 @@ var Point = require('../graphics/Point');
 
 var Controls = function(win, doc) {
 
-  var mouse = Point(0, 0);
   var keystate = {};
-
-  win.onmousemove = function (e) {
-    mouse = Point(e.offsetX, e.offsetY);
-  };
 
   win.onkeydown = function (key) {
     keystate[key.which] = true;
@@ -20,12 +15,18 @@ var Controls = function(win, doc) {
     delete keystate[key.which];
   };
 
-  this.__defineGetter__('mouse', function(){
-    return mouse;
-  });
-
   this.__defineGetter__('keystate', function(){
     return keystate;
+  });
+
+  var mouse = Point(0, 0);
+
+  win.onmousemove = function (e) {
+    mouse = Point(e.offsetX, e.offsetY);
+  };
+
+  this.__defineGetter__('mouse', function(){
+    return mouse;
   });
 
   doc.oncontextmenu = _.constant(false);
