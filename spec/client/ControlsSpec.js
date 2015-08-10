@@ -60,4 +60,47 @@ describe("Controls", function() {
     });
   });
 
+  describe("Keystate", function () {
+
+    var c;
+
+    beforeEach(function(){
+      win.onkeydown = function() {};
+      win.onkeyup = function() {};
+      c = Controls(win, doc);
+    });
+
+
+    it("should track user's keypresses", function() {
+
+      var keys;
+
+      keys = { 12: true };
+      expect(c.keystate).not.toEqual(jasmine.objectContaining(keys));
+      win.onkeydown({ which: 12 });
+      expect(c.keystate).toEqual(jasmine.objectContaining(keys));
+
+      win.onkeydown({ which: 15 });
+      keys = { 12: true, 15: true };
+      expect(c.keystate).toEqual(jasmine.objectContaining(keys));
+
+      win.onkeyup({ which: 12 });
+      keys = { 15: true };
+      expect(c.keystate).toEqual(jasmine.objectContaining(keys));
+    });
+
+    it("should be an immutable property", function() {
+
+      var keys = { 15: true };
+      win.onkeydown({ which: 15 });
+      expect(c.keystate).toEqual(jasmine.objectContaining(keys));
+
+      var fakestate = { 11: true };
+      c.keystate = fakestate;
+
+      expect(c.keystate).toEqual(jasmine.objectContaining(keys));
+      expect(c.keystate).not.toEqual(jasmine.objectContaining(fakestate));
+    });
+  });
+
 });
