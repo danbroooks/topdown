@@ -21,6 +21,11 @@ Connection.prototype.ping = function (){
   });
 };
 
+Connection.prototype.latency = function() {
+  this._latency = this._latency || 0;
+  return this._latency + 'ms';
+};
+
 var Factory = function (socket) {
   return new Connection(socket);
 };
