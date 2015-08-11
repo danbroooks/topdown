@@ -3,6 +3,7 @@ var Collection = require('../util/Collection');
 
 var Connection = function (socket) {
   this.socket = socket;
+  this.id = socket.id;
 };
 
 Connection.prototype.on = function (event, handler) {

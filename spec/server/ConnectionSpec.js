@@ -7,14 +7,23 @@ describe("Connection", function() {
   describe("Factory", function () {
 
     it("should return new instance", function () {
-      expect(Connection() instanceof Connection.Constructor).toBeTruthy();
+      expect(Connection(sinon.mock()) instanceof Connection.Constructor).toBeTruthy();
     });
 
     it("should provide static method for generating collection of connections", function(){
       var col = Connection.Collection();
-      col.add(Connection());
+      col.add(Connection(sinon.mock()));
       col.add("Connection");
       expect(col.length).toEqual(1);
+    });
+
+  });
+
+  describe("Constructor", function () {
+
+    it("should bind the socket id to connection's .id property", function () {
+      var c = new Connection.Constructor({ id: 100 });
+      expect(c.id).toEqual(100);
     });
 
   });
