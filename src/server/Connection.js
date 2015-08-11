@@ -1,16 +1,20 @@
 
 var Collection = require('../util/Collection');
 
-var Connection = function(){
-
+var Connection = function (socket) {
+  this.socket = socket;
 };
 
-var Factory = function(){
-  return new Connection();
+Connection.prototype.on = function (event, handler) {
+  this.socket.on(event, handler);
 };
 
-Factory.Collection = function() {
-  return Collection(function(o){
+var Factory = function (socket) {
+  return new Connection(socket);
+};
+
+Factory.Collection = function () {
+  return Collection(function (o){
     return o instanceof Connection;
   });
 };
