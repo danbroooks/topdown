@@ -9,6 +9,10 @@ Connection.prototype.on = function (event, handler) {
   this.socket.on(event, handler);
 };
 
+Connection.prototype.emit = function (event, data){
+  this.socket.emit(event, data);
+};
+
 var Factory = function (socket) {
   return new Connection(socket);
 };
