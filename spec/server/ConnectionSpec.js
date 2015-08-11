@@ -70,4 +70,31 @@ describe("Connection", function() {
     });
 
   });
+
+  describe('.ping', function () {
+
+    beforeEach(function(){
+      var clock = this.clock = sinon.useFakeTimers();
+
+      var mock = {};
+      mock.emit = function(){};
+      sinon.stub(mock, 'emit', function (event, cb) {
+        clock.tick(500);
+        cb();
+      });
+      this.conn = Connection(mock);
+    });
+
+    afterEach(function(){
+      this.clock.restore();
+    });
+
+    it("should track latency in the connection", function(){
+      var conn = this.conn;
+      conn.ping();
+      expect(conn._latency).toEqual(500);
+    });
+
+  });
+
 });
