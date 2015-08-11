@@ -44,4 +44,30 @@ describe("Connection", function() {
     });
 
   });
+
+  describe(".emit", function(){
+
+    var conn, data;
+    var mock = {};
+
+    beforeEach(function () {
+      mock.emit = sinon.stub();
+      conn = Connection(mock);
+      data = {};
+      conn.emit('update', data);
+    });
+
+    afterEach(function () {
+      mock.emit.reset();
+    });
+
+    it("should forward events socket.emit", function () {
+      expect(mock.emit.called).toBeTruthy();
+    });
+
+    it("should directly pass arguments to socket.emit", function () {
+      expect(mock.emit.calledWith('update', data)).toBeTruthy();
+    });
+
+  });
 });
