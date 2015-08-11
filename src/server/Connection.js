@@ -13,6 +13,14 @@ Connection.prototype.emit = function (event, data){
   this.socket.emit(event, data);
 };
 
+Connection.prototype.ping = function (){
+  var start = Date.now();
+  var conn = this;
+  this.emit('ping', function(){
+    conn._latency = (Date.now() - start);
+  });
+};
+
 var Factory = function (socket) {
   return new Connection(socket);
 };
