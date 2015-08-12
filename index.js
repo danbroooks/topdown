@@ -1,4 +1,4 @@
 
 var Server = require('./src/server/Server');
 
-console.log(Server());
+Server(80).listen();
