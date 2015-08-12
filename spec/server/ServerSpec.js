@@ -69,6 +69,20 @@ describe("Server", function() {
       expect(s instanceof Server.Constructor).toBeTruthy();
     });
 
+    it("should create http server", function () {
+      this.server.listen();
+      expect(httpMock.createServer.calledOnce).toBeTruthy();
+    });
+
+    it("should bind requestHandler to http", function () {
+      this.server.httpRequestHandler = sinon.stub();
+
+      this.server.listen();
+      httpMock.createServer.yield();
+
+      expect(this.server.httpRequestHandler.calledOnce).toBeTruthy();
+    });
+
   });
 
 });
