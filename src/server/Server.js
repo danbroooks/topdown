@@ -6,14 +6,14 @@ var Server = function(port){
 };
 
 Server.prototype.listen = function() {
-
-  var server = http.createServer(function(req, res){
-
-  });
+  var server = http.createServer(this.httpRequestHandler.bind(this));
 
   server.listen(this.port);
 
   return this;
+};
+
+Server.prototype.httpRequestHandler = function (req, res) {
 };
 
 var Factory = function(port){
