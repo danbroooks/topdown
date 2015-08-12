@@ -11,56 +11,64 @@ var Server = proxyquire('../../src/server/Server', {
 describe("Server", function() {
 
   describe("Factory", function () {
+
     it("should return new instance", function () {
       expect(Server() instanceof Server.Constructor).toBeTruthy();
     });
+
   });
 
   describe("Constructor", function () {
+
     it("should parse the port argument as an int", function () {
       var s = new Server.Constructor('12');
       expect(s.port).toEqual(12);
     });
+
   });
 
   describe(".Listen static method", function(){
-    it("should listen on the port passed", function(){
-      var listen = sinon.stub();
-      var createServer = sinon.stub();
 
-      createServer.returns({
+    it("should listen on the port passed", function(){
+
+      var listen = sinon.stub();
+
+      httpMock.createServer = sinon.stub();
+
+      httpMock.createServer.returns({
         listen: listen
       });
 
-      httpMock.createServer = createServer;
-
       Server.Listen(8080);
-
       expect(listen.calledWith(8080)).toBeTruthy();
     });
   });
 
-  describe(".listen(port)", function(){
-    it("should listen on port passed", function(){
-      var listen = sinon.stub();
-      var createServer = sinon.stub();
+  describe(".listen(port)", function () {
 
-      createServer.returns({
+    beforeEach(function () {
+
+      var listen = this.httpListen = sinon.stub();
+
+      httpMock.createServer = sinon.stub();
+
+      httpMock.createServer.returns({
         listen: listen
       });
 
-      httpMock.createServer = createServer;
-
-      var s = Server(88);
-      s.listen();
-
-      expect(listen.calledWith(88)).toBeTruthy();
+      this.server = Server(88);
     });
 
-    it("should return server instance", function() {
-      var s = Server(88).listen();
+    it("should listen on port passed", function () {
+      this.server.listen();
+      expect(this.httpListen.calledWith(88)).toBeTruthy();
+    });
+
+    it("should return server instance", function () {
+      var s = this.server.listen();
       expect(s instanceof Server.Constructor).toBeTruthy();
     });
+
   });
 
 });
