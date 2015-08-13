@@ -4,19 +4,19 @@ var join = require("path").join;
 
 var FileSystem = function(){};
 
-FileSystem.prototype.find = function (path, locations, success, failure) {
+FileSystem.prototype.find = function (path, opts) {
   var self = this;
-  var location = locations.shift();
+  var location = opts.paths.shift();
   var file = join(location, path);
   this.exists(file, function () {
     fs.readFile(file, "binary", function (err, contents) {
-      success(file, contents);
+      opts.success(file, contents);
     });
   }, function () {
-    if (locations.length) {
-      self.find(path, locations, success, failure);
+    if (opts.paths.length) {
+      self.find(path, opts);
     } else {
-      failure();
+      opts.failure();
     }
   });
 };
