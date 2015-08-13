@@ -4,10 +4,6 @@ var join = require("path").join;
 
 var FileSystem = function(){};
 
-FileSystem.Root = join(__dirname, '..', '..', 'public');
-
-FileSystem.Project = join(process.cwd(), 'public');
-
 FileSystem.prototype.find = function (path, locations, success, failure) {
   var self = this;
   var location = locations.shift();
@@ -41,5 +37,9 @@ var Factory = function(){
 };
 
 Factory.Constructor = FileSystem;
+
+Factory.Root = join(__dirname, '..', '..', 'public');
+
+Factory.Project = join(process.cwd(), 'public');
 
 module.exports = Factory;
