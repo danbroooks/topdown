@@ -3,9 +3,13 @@ var sinon = require('sinon');
 var proxyquire = require('proxyquire');
 
 var httpMock = {};
+var fsMock = {};
 
 var Server = proxyquire('../../src/server/Server', {
-  'http': httpMock
+  'http': httpMock,
+  './FileSystem': function() {
+    return fsMock;
+  }
 });
 
 describe("Server", function() {
@@ -81,6 +85,51 @@ describe("Server", function() {
       httpMock.createServer.yield();
 
       expect(this.server.httpRequestHandler.calledOnce).toBeTruthy();
+    });
+
+  });
+
+  describe(".httpRequestHandler(req, res)", function () {
+
+    beforeEach(function () {
+
+      fsMock.find = sinon.stub();
+
+      this.req = {
+        url: '/'
+      };
+
+      this.res = {
+        writeHead: sinon.stub(),
+        end: sinon.stub()
+      };
+    });
+
+    it('should call fs.find to search for the file in the file system', function () {
+      this.req.url = '/gunship.jpeg';
+      Server().httpRequestHandler(this.req, this.res);
+      expect(fsMock.find.called).toBeTruthy();
+      expect(fsMock.find.calledWith('/gunship.jpeg')).toBeTruthy();
+    });
+
+    it("should look for index.html when passed '/'", function () {
+      this.req.url = '/';
+      Server().httpRequestHandler(this.req, this.res);
+      expect(fsMock.find.calledWith('/index.html')).toBeTruthy();
+    });
+
+    it("should serve file when file is found", function () {
+      Server().httpRequestHandler(this.req, this.res);
+      var content = '<h1>Hello</h1>';
+      fsMock.find.yieldTo('success', '/index.html', content);
+      expect(this.res.writeHead.calledWith(200)).toBeTruthy();
+      expect(this.res.end.calledWith(content)).toBeTruthy();
+    });
+
+    it("should throw 404 when file is not found", function () {
+      Server().httpRequestHandler(this.req, this.res);
+      fsMock.find.yieldTo('failure');
+      expect(this.res.writeHead.calledWith(404)).toBeTruthy();
     });
 
   });
