@@ -29,7 +29,7 @@ function bundler(dest, b) {
 };
 
 function topdown() {
-  var b = browserify(assign(opts, {
+  var b = browserify(assign({}, opts, {
     entries: ['./client.js']
   }));
 
@@ -38,7 +38,7 @@ function topdown() {
 };
 
 function externals() {
-  var b = browserify(opts);
+  var b = browserify(assign({}, opts));
   b.require(extenalDependencies);
   return b;
 };
