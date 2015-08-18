@@ -1,8 +1,12 @@
 
-var Client = function(){
-
+var Client = function () {
+  console.log(this);
 };
 
-var c = new Client();
+var Factory = function () {
+  return new Client();
+};
 
-console.log(c);
+Factory.Constructor = Client;
+
+module.exports = Factory;

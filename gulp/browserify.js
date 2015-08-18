@@ -30,7 +30,7 @@ function bundler(dest, b) {
 
 function topdown() {
   var b = browserify(assign(opts, {
-    entries: [ './src/client/Client.js' ]
+    entries: ['./client.js']
   }));
 
   b.external(extenalDependencies);
