@@ -10,6 +10,8 @@ var gutil = require('gulp-util');
 var assign = require('lodash/object/assign');
 
 var extenalDependencies = [
+  'kefir',
+  'lodash'
 ];
 
 var opts = assign(watchify.args, {
@@ -32,7 +34,6 @@ function topdown() {
   var b = browserify(assign({}, opts, {
     entries: ['./client.js']
   }));
-
   b.external(extenalDependencies);
   return b;
 };
