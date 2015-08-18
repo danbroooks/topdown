@@ -1,10 +1,11 @@
 
-var Client = function () {
+var Client = function (render) {
+  this.render = render;
   console.log(this);
 };
 
-var Factory = function () {
-  return new Client();
+var Factory = function (render) {
+  return new Client(render);
 };
 
 Factory.Constructor = Client;
