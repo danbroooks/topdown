@@ -1,10 +1,10 @@
 
-var Render = function(){
-
+var Render = function(doc){
+  this.document = doc;
 };
 
-var Factory = function(){
-  return new Render();
+var Factory = function(doc){
+  return new Render(doc);
 };
 
 Factory.Constructor = Render;

@@ -6,6 +6,13 @@ describe("Render", function() {
     it("should return new instance", function () {
       expect(Render() instanceof Render.Constructor).toBeTruthy();
     });
+
+    it("should store passed document object", function(){
+      var doc = {};
+      expect(Render(doc).document).toEqual(doc);
+    });
   });
+
+
 
 });
