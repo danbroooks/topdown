@@ -1,14 +1,15 @@
 
 var _ = require('lodash');
+var Build = require('../util/Factory').Build;
 
 function negativeZero(n) {
   return (n == 0 && (1/n) !== Number.POSITIVE_INFINITY);;
 };
 
-var Point = function(x, y) {
-  this.x = x;
-  this.y = y;
-};
+var Point = function() {};
+
+Point.prototype.x = 0;
+Point.prototype.y = 0;
 
 Point.prototype.shift = function(x, y){
 
@@ -92,7 +93,7 @@ Point.prototype.clean = function() {
 
 };
 
-var Factory = function(x, y){
+var Factory = Build(Point, function(x, y){
 
   if (arguments.length > 2) {
     throw new Error('Point was passed invalid arguments');
@@ -102,27 +103,26 @@ var Factory = function(x, y){
     throw new Error('Point was passed invalid arguments');
   }
 
+  var opts = {};
+
   if (!y && _.isArray(x)) {
 
     if (x.length != 2) {
       throw new Error('Point was passed invalid arguments');
     }
 
-    return new Point(x[0], x[1]);
+    opts.x = x[0];
+    opts.y = x[1];
 
   } else if (_.isNumber(x) && _.isNumber(y)) {
 
-    return new Point(x, y);
-
-  } else {
-
-    return new Point(0, 0);
+    opts.x = x;
+    opts.y = y;
 
   }
 
-};
-
-Factory.Constructor = Point;
+  return opts;
+});
 
 Factory.Clone = function(inst) {
   if (inst instanceof Point) {
@@ -130,7 +130,7 @@ Factory.Clone = function(inst) {
   } else {
     throw new Error('Point.Clone must be passed an instance of Point');
   }
-}
+};
 
 Factory.Add = function(a, b) {
   return Factory.Clone(a).shift(b);
