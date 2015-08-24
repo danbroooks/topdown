@@ -1,4 +1,2 @@
 
-var Server = require('./src/server/Server');
-
-Server(80).listen();
+module.exports = require('./src/Topdown');
