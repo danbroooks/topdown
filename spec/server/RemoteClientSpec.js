@@ -18,6 +18,15 @@ describe("RemoteClient", function() {
         expect(cl.key(key)).toEqual(val);
       });
     });
+
+    it("should throw an error when passed an invalid string",  function () {
+      var cl = RemoteClient();
+
+      expect(function () {
+        cl.key('some-invalid-string')
+      }).toThrowError();
+
+    });
   });
 
 });
