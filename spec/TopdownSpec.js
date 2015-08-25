@@ -1,4 +1,5 @@
 
+var _ = require('lodash');
 var sinon = require('sinon');
 var proxyquire = require('proxyquire');
 
@@ -29,6 +30,18 @@ describe("Topdown", function () {
       });
 
       this.game.trigger('connect');
+    });
+
+    it("should be able chainable", function () {
+      var game = this.game;
+
+      expect(function(){
+
+        game
+          .on('connect', _.noop).trigger('connect')
+          .on('disconnect', _.noop).trigger('disconnect');
+
+      }).not.toThrow();
     });
   });
 
