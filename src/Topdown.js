@@ -9,10 +9,12 @@ var Game = function () {
 
 Game.prototype.on = function (event, listener) {
   this.events.on(event, listener);
+  return this;
 };
 
 Game.prototype.trigger = function (event) {
-  return this.events.emit(event);
+  this.events.emit(event);
+  return this;
 };
 
 Game.prototype.listen = function (port) {
