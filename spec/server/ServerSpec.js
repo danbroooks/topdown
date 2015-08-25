@@ -1,4 +1,3 @@
-
 var sinon = require('sinon');
 var proxyquire = require('proxyquire');
 
@@ -7,12 +6,12 @@ var fsMock = {};
 
 var Server = proxyquire('../../src/server/Server', {
   'http': httpMock,
-  './FileSystem': function() {
+  './FileSystem': function () {
     return fsMock;
   }
 });
 
-describe("Server", function() {
+describe("Server", function () {
 
   describe("Factory", function () {
 
@@ -31,9 +30,9 @@ describe("Server", function() {
 
   });
 
-  describe(".Listen static method", function(){
+  describe(".Listen static method", function () {
 
-    it("should listen on the port passed", function(){
+    it("should listen on the port passed", function () {
 
       var listen = sinon.stub();
 

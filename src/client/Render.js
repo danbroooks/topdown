@@ -1,5 +1,4 @@
-
-var Render = function(doc){
+var Render = function (doc) {
   this.document = doc;
 };
 
@@ -10,11 +9,10 @@ Render.prototype.addLayer = function (name) {
   body.appendChild(canvas);
 };
 
-var Factory = function(doc){
+var Factory = function (doc) {
   return new Render(doc);
 };
 
 Factory.Constructor = Render;
 
 module.exports = Factory;
-

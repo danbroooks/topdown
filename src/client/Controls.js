@@ -1,10 +1,9 @@
-
 var _ = require('lodash');
 var Kefir = require('kefir');
 
 var Point = require('../graphics/Point');
 
-var Controls = function(win, doc) {
+var Controls = function (win, doc) {
 
   var self = this;
   var keystate = {};
@@ -21,14 +20,14 @@ var Controls = function(win, doc) {
     delete keystate[key.which];
   };
 
-  var keystream = Kefir.fromPoll(30, function(){
-    return _.keys(keystate).map(function(val){
+  var keystream = Kefir.fromPoll(30, function () {
+    return _.keys(keystate).map(function (val) {
       return parseInt(val, 10);
     });
   });
 
-  this.__defineGetter__('keystream', function(){
-    return keystream.skipDuplicates(function(a, b){
+  this.__defineGetter__('keystream', function () {
+    return keystream.skipDuplicates(function (a, b) {
       return _.xor(a, b).length == 0;
     }).throttle(300);
   });
@@ -39,18 +38,18 @@ var Controls = function(win, doc) {
     mouse = Point(e.offsetX, e.offsetY);
   };
 
-  this.__defineGetter__('mouse', function(){
+  this.__defineGetter__('mouse', function () {
     return mouse;
   });
 
   doc.oncontextmenu = _.constant(false);
 };
 
-Controls.prototype.configure = function(config) {
+Controls.prototype.configure = function (config) {
   this.config = config;
 };
 
-var Factory = function(win, doc){
+var Factory = function (win, doc) {
   return new Controls(win, doc);
 };
 
@@ -59,4 +58,3 @@ Factory.Constructor = Controls;
 Factory.Keymap = require('../Keymap');
 
 module.exports = Factory;
-

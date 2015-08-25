@@ -1,11 +1,10 @@
-
 var Keymap = require('../Keymap');
 
 var RemoteClient = function () {
 
 };
 
-RemoteClient.prototype.key = function(letter){
+RemoteClient.prototype.key = function (letter) {
   if (Keymap[letter] !== undefined) {
     return Keymap[letter];
   }

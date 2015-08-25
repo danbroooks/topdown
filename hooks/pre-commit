@@ -1,0 +1,5 @@
+#!/bin/sh
+jasmine
+
+js-beautify ./src/**/*.js -r -n -a -j -s 2 --good-stuff
+js-beautify ./spec/**/*.js -r -n -a -j -s 2 --good-stuff

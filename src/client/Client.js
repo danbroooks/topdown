@@ -1,4 +1,3 @@
-
 var Client = function (render) {
   this.render = render;
   console.log(this);

@@ -1,8 +1,7 @@
-
 var fs = require('fs');
 var join = require("path").join;
 
-var FileSystem = function(){};
+var FileSystem = function () {};
 
 FileSystem.prototype.find = function (path, opts) {
   var self = this;
@@ -32,7 +31,7 @@ FileSystem.prototype.exists = function (path, success, failure) {
   });
 };
 
-var Factory = function(){
+var Factory = function () {
   return new FileSystem();
 };
 

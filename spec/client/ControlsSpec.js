@@ -1,4 +1,4 @@
-describe("Controls", function() {
+describe("Controls", function () {
 
   var sinon = require('sinon');
 
@@ -6,7 +6,7 @@ describe("Controls", function() {
   var Point = require('../../src/graphics/Point');
   var doc, win;
 
-  beforeEach(function(){
+  beforeEach(function () {
     doc = {
       oncontextmenu: undefined
     };
@@ -20,7 +20,7 @@ describe("Controls", function() {
   });
 
   describe("Context Menu", function () {
-    it("should block default context menu from opening", function(){
+    it("should block default context menu from opening", function () {
       Controls(win, doc);
       expect(doc.oncontextmenu()).toEqual(false);
     });
@@ -30,26 +30,28 @@ describe("Controls", function() {
 
     var c;
 
-    beforeEach(function(){
-      win.onmousemove = function() {};
+    beforeEach(function () {
+      win.onmousemove = function () {};
       c = Controls(win, doc);
     });
 
-    it("should track user's mouse position as a point object", function(){
+    it("should track user's mouse position as a point object", function () {
       expect(c.mouse instanceof Point.Constructor).toBeTruthy();
     });
 
-    it("should track user's mouse position when it moves", function() {
+    it("should track user's mouse position when it moves", function () {
       win.onmousemove({
-        offsetX: 20, offsetY: 40
+        offsetX: 20,
+        offsetY: 40
       });
       expect(c.mouse.x).toEqual(20);
       expect(c.mouse.y).toEqual(40);
     });
 
-    it("should be an immutable property", function() {
+    it("should be an immutable property", function () {
       win.onmousemove({
-        offsetX: 20, offsetY: 40
+        offsetX: 20,
+        offsetY: 40
       });
 
       expect(c.mouse.x).toEqual(20);
@@ -82,10 +84,12 @@ describe("Controls", function() {
       c.keystream = {};
 
       c.keystream.onValue(function (val) {
-        expect(val).toEqual([ 15 ]);
+        expect(val).toEqual([15]);
       });
 
-      win.onkeydown({ which: 15 });
+      win.onkeydown({
+        which: 15
+      });
 
       this.clock.tick(400);
       done();
@@ -93,16 +97,24 @@ describe("Controls", function() {
 
     it("should track user's keypresses", function (done) {
 
-      var keys = [ 12, 18 ];
+      var keys = [12, 18];
 
       c.keystream.onValue(function (val) {
         expect(val).toEqual(keys);
       });
 
-      win.onkeydown({ which: 12 });
-      win.onkeydown({ which: 15 });
-      win.onkeydown({ which: 18 });
-      win.onkeyup({ which: 15 });
+      win.onkeydown({
+        which: 12
+      });
+      win.onkeydown({
+        which: 15
+      });
+      win.onkeydown({
+        which: 18
+      });
+      win.onkeyup({
+        which: 15
+      });
 
       this.clock.tick(400);
       done();
@@ -115,12 +127,18 @@ describe("Controls", function() {
       });
 
       c.keystream.onValue(function (val) {
-        expect(val).toEqual([ 38 ]);
+        expect(val).toEqual([38]);
       });
 
-      win.onkeydown({ which: 42 });
-      win.onkeydown({ which: 38 });
-      win.onkeydown({ which: 39 });
+      win.onkeydown({
+        which: 42
+      });
+      win.onkeydown({
+        which: 38
+      });
+      win.onkeydown({
+        which: 39
+      });
 
       this.clock.tick(400);
       done();

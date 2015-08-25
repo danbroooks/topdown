@@ -1,8 +1,8 @@
-describe("Collection", function() {
+describe("Collection", function () {
 
   var Module = require('../../src/util/Collection');
 
-  function stringFilter(val){
+  function stringFilter(val) {
     return typeof val == 'string';
   }
 
@@ -15,7 +15,7 @@ describe("Collection", function() {
       expect(Factory() instanceof Constructor).toBeTruthy();
     });
 
-    it("should take a filter argument, defaulting to constant true if nothing passed", function(){
+    it("should take a filter argument, defaulting to constant true if nothing passed", function () {
       var c;
 
       c = Factory();
@@ -26,11 +26,11 @@ describe("Collection", function() {
     });
   });
 
-  describe(".add(obj)", function(){
+  describe(".add(obj)", function () {
 
     var Collection = Module.Constructor;
 
-    it("should add items to the list", function() {
+    it("should add items to the list", function () {
       var c = new Collection();
       c.add(12);
       c.add('hello');
@@ -38,14 +38,14 @@ describe("Collection", function() {
       expect(c.items[1]).toEqual('hello');
     });
 
-    it("should keep track of the number of items in the collection", function(){
+    it("should keep track of the number of items in the collection", function () {
       var c = new Collection();
       expect(c.length).toEqual(0);
       c.add({});
       expect(c.length).toEqual(1);
     });
 
-    it("should only add items that pass the criteria of the filter", function(){
+    it("should only add items that pass the criteria of the filter", function () {
       var c = new Collection(stringFilter);
       c.add(12);
       c.add("hello");
@@ -56,8 +56,8 @@ describe("Collection", function() {
       expect(c.items).not.toContain(12);
     });
 
-    it("should only add items that pass the criteria of the filter", function(){
-      var c = new Collection(function(obj){
+    it("should only add items that pass the criteria of the filter", function () {
+      var c = new Collection(function (obj) {
         return obj instanceof Collection;
       });
       c.add(12);
@@ -70,24 +70,24 @@ describe("Collection", function() {
     });
   });
 
-  describe(".remove(fn)", function() {
+  describe(".remove(fn)", function () {
 
     var Collection = Module.Constructor;
 
-    it("should remove elements from list based on function passed to method", function() {
+    it("should remove elements from list based on function passed to method", function () {
       var c = new Collection();
       c.add(1);
       c.add(1);
       c.add(2);
       c.add(5);
 
-      c.remove(function(val){
+      c.remove(function (val) {
         return val > 4;
       });
 
       expect(c.length).toEqual(3);
 
-      c.remove(function(val){
+      c.remove(function (val) {
         return val == 1;
       });
 
@@ -95,11 +95,11 @@ describe("Collection", function() {
     });
   });
 
-  describe(".each(fn)", function() {
+  describe(".each(fn)", function () {
 
     var Collection = Module.Constructor;
 
-    beforeEach(function(){
+    beforeEach(function () {
       var c = new Collection();
       c.add(1);
       c.add(2);
@@ -107,8 +107,8 @@ describe("Collection", function() {
       this.c = c;
     });
 
-    it("should iterate over elements applying passed predicate", function() {
-      this.c.each(function(val){
+    it("should iterate over elements applying passed predicate", function () {
+      this.c.each(function (val) {
         val += 1;
         return val;
       });

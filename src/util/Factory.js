@@ -1,4 +1,3 @@
-
 var assign = require('lodash/object/assign');
 
 var Build = function (Class, preconstructor) {

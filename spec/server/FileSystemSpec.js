@@ -1,4 +1,3 @@
-
 var sinon = require('sinon');
 var proxyquire = require('proxyquire');
 
@@ -8,7 +7,7 @@ var FileSystem = proxyquire('../../src/server/FileSystem', {
   'fs': fsMock
 });
 
-describe("FileSystem", function() {
+describe("FileSystem", function () {
 
   beforeEach(function () {
     this.success = sinon.spy();
@@ -26,12 +25,12 @@ describe("FileSystem", function() {
     });
   });
 
-  describe(".exists(path, success, failure)", function() {
+  describe(".exists(path, success, failure)", function () {
 
     var fs = FileSystem();
 
     function returns(value) {
-      return function(path, cb) {
+      return function (path, cb) {
         return cb(value);
       };
     }
@@ -51,14 +50,14 @@ describe("FileSystem", function() {
     });
   });
 
-  describe(".find(path, opts)", function() {
+  describe(".find(path, opts)", function () {
 
     var fs = FileSystem();
     var join = require("path").join;
     var opts;
 
-    beforeAll(function(){
-      fsMock.exists = function(path, cb) {
+    beforeAll(function () {
+      fsMock.exists = function (path, cb) {
         var validPaths = [
           join('core', 'index.html'),
           join('project', 'script.js'),
@@ -80,35 +79,35 @@ describe("FileSystem", function() {
       opts.failure = this.failure;
     });
 
-    it('should look in multiple locations for files', function() {
-      opts.paths = [ 'project', 'core' ];
+    it('should look in multiple locations for files', function () {
+      opts.paths = ['project', 'core'];
       fs.find('index.html', opts);
       expect(this.success.called).toBeTruthy();
       expect(this.failure.called).toBeFalsy();
 
-      opts.paths = [ 'project', 'core' ];
+      opts.paths = ['project', 'core'];
       fs.find('script.js', opts);
       expect(this.success.calledTwice).toBeTruthy();
       expect(this.failure.called).toBeFalsy();
     });
 
-    it('should execute failure callback if file not found', function() {
-      opts.paths = [ 'project', 'core' ];
+    it('should execute failure callback if file not found', function () {
+      opts.paths = ['project', 'core'];
       fs.find('styles.css', opts);
       expect(this.success.called).toBeFalsy();
       expect(this.failure.called).toBeTruthy();
     });
 
-    it('should prefer the result from the location that comes first in the array', function() {
-      opts.paths = [ 'project', 'core' ];
+    it('should prefer the result from the location that comes first in the array', function () {
+      opts.paths = ['project', 'core'];
       fs.find('script.js', opts);
       expect(
         this.success.calledWith(join('project', 'script.js'))
       ).toBeTruthy();
     });
 
-    it('should pass contents of file to callback on success', function() {
-      opts.paths = [ 'core' ];
+    it('should pass contents of file to callback on success', function () {
+      opts.paths = ['core'];
       fs.find('script.js', opts);
       expect(this.success.calledWith(join('core', 'script.js'), 'hello world')).toBeTruthy();
     });

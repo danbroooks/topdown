@@ -1,4 +1,4 @@
-describe("Client", function() {
+describe("Client", function () {
 
   var Client = require('../../src/client/Client');
 

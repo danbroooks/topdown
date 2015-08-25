@@ -1,17 +1,16 @@
-
 var _ = require('lodash');
 var Build = require('../util/Factory').Build;
 
 function negativeZero(n) {
-  return (n == 0 && (1/n) !== Number.POSITIVE_INFINITY);;
+  return (n == 0 && (1 / n) !== Number.POSITIVE_INFINITY);;
 };
 
-var Point = function() {};
+var Point = function () {};
 
 Point.prototype.x = 0;
 Point.prototype.y = 0;
 
-Point.prototype.shift = function(x, y){
+Point.prototype.shift = function (x, y) {
 
   if (_.isNumber(x) && _.isNumber(y)) {
     this.x += x;
@@ -26,7 +25,7 @@ Point.prototype.shift = function(x, y){
   return this;
 };
 
-Point.prototype.invert = function(){
+Point.prototype.invert = function () {
 
   if (this.x !== 0) {
     this.x *= -1;
@@ -76,12 +75,12 @@ Point.prototype.rotate = function (axis, degrees) {
     y: transform.x * sin + transform.y * cos
   };
 
-  this.x = Number( (rotate.x + axis.x).toFixed(12) );
-  this.y = Number( (rotate.y + axis.y).toFixed(12) );
+  this.x = Number((rotate.x + axis.x).toFixed(12));
+  this.y = Number((rotate.y + axis.y).toFixed(12));
   this.clean();
 };
 
-Point.prototype.clean = function() {
+Point.prototype.clean = function () {
 
   if (negativeZero(this.x)) {
     this.x = 0;
@@ -93,7 +92,7 @@ Point.prototype.clean = function() {
 
 };
 
-var Factory = Build(Point, function(x, y){
+var Factory = Build(Point, function (x, y) {
 
   if (arguments.length > 2) {
     throw new Error('Point was passed invalid arguments');
@@ -124,7 +123,7 @@ var Factory = Build(Point, function(x, y){
   return opts;
 });
 
-Factory.Clone = function(inst) {
+Factory.Clone = function (inst) {
   if (inst instanceof Point) {
     return Factory(inst.x, inst.y);
   } else {
@@ -132,11 +131,11 @@ Factory.Clone = function(inst) {
   }
 };
 
-Factory.Add = function(a, b) {
+Factory.Add = function (a, b) {
   return Factory.Clone(a).shift(b);
 };
 
-Factory.Invert = function(point) {
+Factory.Invert = function (point) {
   return Factory.Clone(point).invert();
 };
 

@@ -1,4 +1,4 @@
-describe("Factory", function() {
+describe("Factory", function () {
 
   describe(".Build(Class, preconstructor)", function () {
 
@@ -27,17 +27,24 @@ describe("Factory", function() {
 
     it("should override values set in the object passed", function () {
       var f = Build(MockClass);
-      expect(f({ b: 15 }).b).toEqual(15);
+      expect(f({
+        b: 15
+      }).b).toEqual(15);
     });
 
     it("should not override values set in the constructor", function () {
       var f = Build(MockClass);
-      expect(f({ c: 7 }).c).toEqual(20);
+      expect(f({
+        c: 7
+      }).c).toEqual(20);
     });
 
     it("should take a preconstructor function that can be used to pre-construct passed opts", function () {
       var factory = Build(MockClass, function (x, y) {
-        return { x: x + 1, y: y + 1 };
+        return {
+          x: x + 1,
+          y: y + 1
+        };
       });
 
       var someObj = factory(12, 21);

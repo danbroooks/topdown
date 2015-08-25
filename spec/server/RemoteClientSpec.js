@@ -1,6 +1,6 @@
 var _ = require('lodash');
 
-describe("RemoteClient", function() {
+describe("RemoteClient", function () {
 
   var RemoteClient = require('../../src/server/RemoteClient');
 
@@ -11,7 +11,7 @@ describe("RemoteClient", function() {
   });
 
   describe(".key(string)", function () {
-    it("should translate string representation of a key into a keycode",  function () {
+    it("should translate string representation of a key into a keycode", function () {
       var cl = RemoteClient();
       var keymap = require('../../src/Keymap.js');
       _.forOwn(keymap, function (val, key) {
@@ -19,7 +19,7 @@ describe("RemoteClient", function() {
       });
     });
 
-    it("should throw an error when passed an invalid string",  function () {
+    it("should throw an error when passed an invalid string", function () {
       var cl = RemoteClient();
 
       expect(function () {
