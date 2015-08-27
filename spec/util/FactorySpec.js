@@ -52,17 +52,19 @@ describe("Factory", function () {
       expect(someObj.y).toEqual(22);
     });
 
-    describe("Root extensions", function () {
+    describe("Static methods", function () {
+      describe(".Created", function () {
 
-      describe('.instanceof()', function () {
-
-        it("should add in instanceof method which should return true when passed factory constructor", function () {
+        it("should return true when passed an object that is type of factory constructor", function () {
           var Fac = Build(MockClass);
           var obj = Fac();
-          expect(obj.instanceof(Fac)).toBeTruthy();
+          expect(Fac.Created(obj)).toBeTruthy();
         });
 
       });
+    });
+
+    describe("Root extensions", function () {
 
     });
   });

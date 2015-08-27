@@ -10,10 +10,6 @@ var Build = function (Class, preconstructor) {
 
   Root.prototype = obj;
 
-  Root.prototype.instanceof = function (Fac) {
-    return this instanceof Fac.Constructor;
-  };
-
   // create function for object creation
   var Factory = function (opts) {
 
@@ -36,6 +32,11 @@ var Build = function (Class, preconstructor) {
   };
 
   Factory.Constructor = Class;
+
+  // method to check if object was created by this factory
+  Factory.Created = function (object) {
+    return (object instanceof Factory.Constructor);
+  };
 
   return Factory;
 };
