@@ -57,8 +57,9 @@ describe("Factory", function () {
       describe('.instanceof()', function () {
 
         it("should add in instanceof method which should return true when passed factory constructor", function () {
-          var f = Build(MockClass);
-          expect(f().instanceof(MockClass)).toBeTruthy();
+          var Fac = Build(MockClass);
+          var obj = Fac();
+          expect(obj.instanceof(Fac)).toBeTruthy();
         });
 
       });

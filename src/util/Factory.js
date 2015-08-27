@@ -10,8 +10,8 @@ var Build = function (Class, preconstructor) {
 
   Root.prototype = obj;
 
-  Root.prototype.instanceof = function (object) {
-    return this instanceof object;
+  Root.prototype.instanceof = function (Fac) {
+    return this instanceof Fac.Constructor;
   };
 
   // create function for object creation
