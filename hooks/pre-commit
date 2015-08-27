@@ -1,5 +1,7 @@
 #!/bin/sh
 jasmine
 
-js-beautify ./src/**/*.js -r -n -a -j -s 2 --good-stuff
-js-beautify ./spec/**/*.js -r -n -a -j -s 2 --good-stuff
+git diff --cached --name-only --diff-filter=AMR \
+| grep '.js' \
+| xargs -r js-beautify -r -n -a -j -s 2 --good-stuff
+
