@@ -5,3 +5,5 @@ git diff --cached --name-only --diff-filter=AMR \
 | grep '.js' \
 | xargs -r js-beautify -r -n -a -j -s 2 --good-stuff
 
+git diff --cached --name-only --diff-filter=AMR \
+| xargs -r git add
