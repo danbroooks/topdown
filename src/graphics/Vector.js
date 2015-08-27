@@ -20,7 +20,11 @@ Vector.prototype.angle = function () {
 /**
  * calculate the length of the vector
  */
-Vector.prototype.length = function () {};
+Vector.prototype.length = function () {
+  var dx = this.from.x - this.to.x;
+  var dy = this.from.y - this.to.y;
+  return Math.sqrt(dx * dx + dy * dy);
+};
 
 var Factory = Build(Vector, function (from, to) {
 

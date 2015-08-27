@@ -32,7 +32,7 @@ describe("Vector", function () {
   });
 
   describe(".angle()", function () {
-    it("", function () {
+    it("should calculate it's angle", function () {
       var c = Point(0, 0);
 
       var v0 = Vector(c, Point(0, 1));
@@ -62,9 +62,22 @@ describe("Vector", function () {
   });
 
   describe(".length()", function () {
-    it("", function () {
+    it("should calculate it's length", function () {
+      var c = Point(0, 0);
 
+      var l0 = Vector(c, c).length();
+      expect(l0).toEqual(0);
+
+      var l1 = Vector(c, Point(0, 1)).length();
+      expect(l1).toEqual(1);
+
+      var nl1 = Vector(c, Point(0, -1)).length();
+      expect(nl1).toEqual(1);
+
+      var angled = Vector(c, Point(700, 500)).length();
+      expect(Math.round(angled * 100) / 100).toEqual(860.23);
     });
+
   });
 
 });
