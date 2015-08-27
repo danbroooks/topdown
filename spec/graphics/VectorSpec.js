@@ -31,4 +31,40 @@ describe("Vector", function () {
 
   });
 
+  describe(".angle()", function () {
+    it("", function () {
+      var c = Point(0, 0);
+
+      var v0 = Vector(c, Point(0, 1));
+      expect(v0.angle()).toEqual(0);
+
+      var v45 = Vector(c, Point(1, 1));
+      expect(v45.angle()).toEqual(45);
+
+      var v90 = Vector(c, Point(1, 0));
+      expect(v90.angle()).toEqual(90);
+
+      var v45 = Vector(c, Point(1, -1));
+      expect(v45.angle()).toEqual(135);
+
+      var v180 = Vector(c, Point(0, -1));
+      expect(v180.angle()).toEqual(180);
+
+      var v270 = Vector(c, Point(-1, -1));
+      expect(v270.angle()).toEqual(225);
+
+      var v270 = Vector(c, Point(-1, 0));
+      expect(v270.angle()).toEqual(270);
+
+      var v270 = Vector(c, Point(-1, 1));
+      expect(v270.angle()).toEqual(315);
+    });
+  });
+
+  describe(".length()", function () {
+    it("", function () {
+
+    });
+  });
+
 });
