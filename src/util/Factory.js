@@ -2,10 +2,23 @@ var assign = require('lodash/object/assign');
 
 var Build = function (Class, preconstructor) {
 
+  // create a new object from Factory's class
+  var obj = Object.create(Class.prototype);
+
+  // root object for adding additonal object functionality
+  function Root() {};
+
+  Root.prototype = obj;
+
+  Root.prototype.instanceof = function (object) {
+    return this instanceof object;
+  };
+
+  // create function for object creation
   var Factory = function (opts) {
 
     // create a new object
-    var obj = Object.create(Class.prototype);
+    obj = Object.create(Root.prototype);
 
     // if the factory has a preconstructor, use it to pre-configure 'opts'
     if (preconstructor) {

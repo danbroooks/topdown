@@ -40,16 +40,29 @@ describe("Factory", function () {
     });
 
     it("should take a preconstructor function that can be used to pre-construct passed opts", function () {
-      var factory = Build(MockClass, function (x, y) {
+      var f = Build(MockClass, function (x, y) {
         return {
           x: x + 1,
           y: y + 1
         };
       });
 
-      var someObj = factory(12, 21);
+      var someObj = f(12, 21);
       expect(someObj.x).toEqual(13);
       expect(someObj.y).toEqual(22);
+    });
+
+    describe("Root extensions", function () {
+
+      describe('.instanceof()', function () {
+
+        it("should add in instanceof method which should return true when passed factory constructor", function () {
+          var f = Build(MockClass);
+          expect(f().instanceof(MockClass)).toBeTruthy();
+        });
+
+      });
+
     });
   });
 });
