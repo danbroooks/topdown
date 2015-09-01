@@ -1,13 +1,19 @@
+var Build = require('../util/Factory').Build;
+var io = require('socket.io-client');
 
-var Network = function(){
-
+var Network = function () {
+  this.socket = io.connect(this.server, this.config);
 };
 
-var Factory = function(){
-  return new Network();
+Network.prototype.config = {
+  transports: ['websocket'],
+  'force new connection': true
 };
 
-Factory.Constructor = Network;
+var Factory = Build(Network, function (server) {
+  var opts = {};
+  opts.server = server;
+  return opts;
+});
 
 module.exports = Factory;
-
