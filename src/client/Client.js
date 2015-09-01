@@ -1,6 +1,6 @@
-var Client = function (render) {
+var Client = function (render, controls) {
   this.render = render;
-  console.log(this);
+  this.controls = controls;
 };
 
 var Factory = function (render) {
