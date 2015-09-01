@@ -11,7 +11,8 @@ var assign = require('lodash/object/assign');
 
 var extenalDependencies = [
   'kefir',
-  'lodash'
+  'lodash',
+  'socket.io-client'
 ];
 
 var opts = assign(watchify.args, {
@@ -23,9 +24,11 @@ function bundler(dest, b) {
   return b.bundle()
     .pipe(source(dest))
     .pipe(buffer())
-    .pipe(sourcemaps.init({ loadMaps: true }))
-      .pipe(uglify())
-      .on('error', gutil.log)
+    .pipe(sourcemaps.init({
+      loadMaps: true
+    }))
+    .pipe(uglify())
+    .on('error', gutil.log)
     .pipe(sourcemaps.write('./'))
     .pipe(gulp.dest('./public'));
 };
@@ -55,6 +58,7 @@ gulp.task('bundle-externals', function () {
 gulp.task('watchify', function () {
   var b = topdown();
   var w = watchify(b);
+
   function update() {
     return bundler('topdown.js', w);
   }
@@ -63,5 +67,4 @@ gulp.task('watchify', function () {
   return update();
 });
 
-gulp.task('build', [ 'bundle', 'bundle-externals' ]);
-
+gulp.task('build', ['bundle', 'bundle-externals']);
