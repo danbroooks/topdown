@@ -5,13 +5,11 @@ var fs = require('./FileSystem');
 
 var Server = function (port) {
   this.port = parseInt(port, 10);
+  this.http = http.createServer(this.httpRequestHandler);
 };
 
 Server.prototype.listen = function () {
-  var server = http.createServer(this.httpRequestHandler.bind(this));
-
-  server.listen(this.port);
-
+  this.http.listen(this.port);
   return this;
 };
 

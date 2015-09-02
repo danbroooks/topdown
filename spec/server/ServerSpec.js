@@ -23,11 +23,30 @@ describe("Server", function () {
 
   describe("Constructor", function () {
 
+    beforeEach(function () {
+
+      httpMock.createServer = sinon.stub();
+
+      httpMock.createServer.returns({
+        listen: sinon.stub()
+      });
+
+    });
+
     it("should parse the port argument as an int", function () {
       var s = new Server.Constructor('12');
       expect(s.port).toEqual(12);
     });
 
+    it("should create http server", function () {
+      new Server.Constructor(88);
+      expect(httpMock.createServer.calledOnce).toBeTruthy();
+    });
+
+    it("should bind requestHandler to http", function () {
+      var s = new Server.Constructor(88);
+      expect(httpMock.createServer.calledWith(s.httpRequestHandler)).toBeTruthy();
+    });
   });
 
   describe(".Listen static method", function () {
@@ -50,40 +69,18 @@ describe("Server", function () {
   describe(".listen(port)", function () {
 
     beforeEach(function () {
-
-      var listen = this.httpListen = sinon.stub();
-
-      httpMock.createServer = sinon.stub();
-
-      httpMock.createServer.returns({
-        listen: listen
-      });
-
       this.server = Server(88);
+      this.server.http.listen = sinon.stub();
     });
 
     it("should listen on port passed", function () {
       this.server.listen();
-      expect(this.httpListen.calledWith(88)).toBeTruthy();
+      expect(this.server.http.listen.calledWith(88)).toBeTruthy();
     });
 
     it("should return server instance", function () {
       var s = this.server.listen();
       expect(s instanceof Server.Constructor).toBeTruthy();
-    });
-
-    it("should create http server", function () {
-      this.server.listen();
-      expect(httpMock.createServer.calledOnce).toBeTruthy();
-    });
-
-    it("should bind requestHandler to http", function () {
-      this.server.httpRequestHandler = sinon.stub();
-
-      this.server.listen();
-      httpMock.createServer.yield();
-
-      expect(this.server.httpRequestHandler.calledOnce).toBeTruthy();
     });
 
   });
