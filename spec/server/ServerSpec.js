@@ -3,9 +3,11 @@ var proxyquire = require('proxyquire');
 
 var httpMock = {};
 var fsMock = {};
+var socketio = sinon.stub();
 
 var Server = proxyquire('../../src/server/Server', {
   'http': httpMock,
+  'socket.io': socketio,
   './FileSystem': function () {
     return fsMock;
   }
@@ -46,6 +48,11 @@ describe("Server", function () {
     it("should bind requestHandler to http", function () {
       var s = new Server.Constructor(88);
       expect(httpMock.createServer.calledWith(s.httpRequestHandler)).toBeTruthy();
+    });
+
+    it("should bind a socket-io connection via the http object", function () {
+      var s = new Server.Constructor(88);
+      expect(socketio.calledWith(s.http)).toBeTruthy();
     });
   });
 

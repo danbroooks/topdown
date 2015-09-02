@@ -1,11 +1,13 @@
 var http = require('http');
 var mime = require('mime');
+var socketio = require('socket.io');
 
 var fs = require('./FileSystem');
 
 var Server = function (port) {
   this.port = parseInt(port, 10);
   this.http = http.createServer(this.httpRequestHandler);
+  this.socket = socketio(this.http);
 };
 
 Server.prototype.listen = function () {
