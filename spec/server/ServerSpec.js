@@ -1,19 +1,19 @@
-var sinon = require('sinon');
-var proxyquire = require('proxyquire');
-
-var httpMock = {};
-var fsMock = {};
-var socketio = sinon.stub();
-
-var Server = proxyquire('../../src/server/Server', {
-  'http': httpMock,
-  'socket.io': socketio,
-  './FileSystem': function () {
-    return fsMock;
-  }
-});
-
 describe("Server", function () {
+
+  var sinon = require('sinon');
+  var proxyquire = require('proxyquire');
+
+  var httpMock = {};
+  var fsMock = {};
+  var socketio = sinon.stub();
+
+  var Server = proxyquire('../../src/server/Server', {
+    'http': httpMock,
+    'socket.io': socketio,
+    './FileSystem': function () {
+      return fsMock;
+    }
+  });
 
   describe("Factory", function () {
 

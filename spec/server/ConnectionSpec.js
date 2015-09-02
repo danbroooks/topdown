@@ -1,7 +1,6 @@
-var sinon = require('sinon');
-
 describe("Connection", function () {
 
+  var sinon = require('sinon');
   var Connection = require('../../src/server/Connection');
 
   describe("Factory", function () {

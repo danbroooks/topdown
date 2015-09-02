@@ -1,7 +1,6 @@
-var _ = require('lodash');
-
 describe("RemoteClient", function () {
 
+  var _ = require('lodash');
   var RemoteClient = require('../../src/server/RemoteClient');
 
   describe("Factory", function () {

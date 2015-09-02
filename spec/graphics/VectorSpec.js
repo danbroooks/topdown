@@ -1,7 +1,7 @@
-var Vector = require('../../src/graphics/Vector');
-var Point = require('../../src/graphics/Point');
-
 describe("Vector", function () {
+
+  var Vector = require('../../src/graphics/Vector');
+  var Point = require('../../src/graphics/Point');
 
   describe("Factory", function () {
 

@@ -1,7 +1,7 @@
-var sinon = require('sinon');
-var proxyquire = require('proxyquire');
-
 describe("Network", function () {
+
+  var sinon = require('sinon');
+  var proxyquire = require('proxyquire');
 
   var iomock = {};
 

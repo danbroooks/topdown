@@ -1,7 +1,6 @@
-var sinon = require('sinon');
-
 describe("Render", function () {
 
+  var sinon = require('sinon');
   var Render = require('../../src/client/Render');
 
   describe("Factory", function () {

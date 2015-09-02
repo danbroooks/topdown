@@ -1,13 +1,13 @@
-var sinon = require('sinon');
-var proxyquire = require('proxyquire');
-
-var fsMock = {};
-
-var FileSystem = proxyquire('../../src/server/FileSystem', {
-  'fs': fsMock
-});
-
 describe("FileSystem", function () {
+
+  var sinon = require('sinon');
+  var proxyquire = require('proxyquire');
+
+  var fsMock = {};
+
+  var FileSystem = proxyquire('../../src/server/FileSystem', {
+    'fs': fsMock
+  });
 
   beforeEach(function () {
     this.success = sinon.spy();
