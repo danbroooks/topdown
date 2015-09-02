@@ -1,3 +1,4 @@
+var _ = require('lodash');
 var http = require('http');
 var mime = require('mime');
 var socketio = require('socket.io');
@@ -43,10 +44,7 @@ Server.prototype.httpRequestHandler = function (req, res) {
 };
 
 Server.prototype.on = function (event, handler) {
-  var s = this;
-  this.socket.on(event, function () {
-    handler.apply(s);
-  });
+  this.socket.on(event, _.bind(handler, this));
   return this;
 };
 
