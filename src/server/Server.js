@@ -42,6 +42,14 @@ Server.prototype.httpRequestHandler = function (req, res) {
   });
 };
 
+Server.prototype.on = function (event, handler) {
+  var s = this;
+  this.socket.on(event, function () {
+    handler.apply(s);
+  });
+  return this;
+};
+
 var Factory = function (port) {
   return new Server(port);
 };

@@ -137,4 +137,28 @@ describe("Server", function () {
 
   });
 
+  describe('.on(event, hander)', function () {
+
+    beforeEach(function(){
+      this.socketon = sinon.stub();
+      socketio.returns({
+        on: this.socketon
+      });
+    });
+
+    it("should be chainable", function () {
+      var s = Server();
+      expect(s.on(null, function(){})).toEqual(s);
+    });
+
+
+    it("should forward on events to this.socket", function () {
+      var handler = sinon.stub();
+      Server().on('event-name', handler);
+      expect(this.socketon.firstCall.args[0]).toEqual('event-name');
+      this.socketon.yield();
+      expect(handler.called).toBeTruthy();
+    });
+  });
+
 });
