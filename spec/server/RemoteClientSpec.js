@@ -1,6 +1,7 @@
 describe("RemoteClient", function () {
 
   var _ = require('lodash');
+  var sinon = require('sinon');
   var RemoteClient = require('../../src/server/RemoteClient');
 
   describe("Factory", function () {
@@ -40,4 +41,53 @@ describe("RemoteClient", function () {
     });
   });
 
+  describe("Socket forwarders", function () {
+    beforeEach(function () {
+      this.socket = {id: 1234};
+      this.socket.emit = sinon.stub();
+    });
+
+    describe(".addCanvas", function () {
+      beforeEach(function () {
+        RemoteClient(this.socket).addCanvas('foreground');
+      });
+
+      it("should call emit method on socket", function () {
+        expect(this.socket.emit.called).toBeTruthy();
+      });
+
+      it("should call pass appropriate arguments to emit", function () {
+        expect(this.socket.emit.calledWith('addCanvas', 'foreground')).toBeTruthy();
+      });
+    });
+
+    describe(".setControls", function () {
+      beforeEach(function () {
+        RemoteClient(this.socket).setControls({ up: 35 });
+      });
+
+      it("should call emit method on socket", function () {
+        expect(this.socket.emit.called).toBeTruthy();
+      });
+
+      it("should call pass appropriate arguments to emit", function () {
+        expect(this.socket.emit.calledWith('setControls', { up: 35 })).toBeTruthy();
+      });
+    });
+
+    describe(".render", function () {
+      beforeEach(function () {
+        this.points = { points: [ [ 32, 43], [ 50, 40 ] ] };
+        RemoteClient(this.socket).render(this.points);
+      });
+
+      it("should call emit method on socket", function () {
+        expect(this.socket.emit.called).toBeTruthy();
+      });
+
+      it("should call pass appropriate arguments to emit", function () {
+        expect(this.socket.emit.calledWith('render', this.points)).toBeTruthy();
+      });
+    });
+  });
 });
