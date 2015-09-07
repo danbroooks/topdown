@@ -6,13 +6,21 @@ describe("Server", function () {
   var httpMock = {};
   var fsMock = {};
   var socketio = sinon.stub();
+  var ConnectionMock = sinon.stub();
+  ConnectionMock.Collection = sinon.stub();
 
   var Server = proxyquire('../../src/server/Server', {
     'http': httpMock,
     'socket.io': socketio,
     './FileSystem': function () {
       return fsMock;
-    }
+    },
+    './Connection': ConnectionMock
+  });
+
+  afterEach(function () {
+    ConnectionMock.reset();
+    ConnectionMock.Collection.reset();
   });
 
   describe("Factory", function () {
@@ -137,9 +145,46 @@ describe("Server", function () {
 
   });
 
+  describe('.onConnected(socket)', function () {
+
+    beforeEach(function () {
+      var onstub = sinon.stub();
+      ConnectionMock.returns({
+        on: onstub
+      });
+      this.onstub = onstub;
+
+      var addstub = sinon.stub();
+      ConnectionMock.Collection.returns({
+        add: addstub
+      });
+      this.addstub = addstub;
+    });
+
+    it('should create a connection object from socket data', function () {
+      var s = Server();
+      var socket = {
+        id: 1234
+      };
+      s.onConnected(socket);
+      expect(ConnectionMock.calledWith(socket)).toBeTruthy();
+    });
+
+    it('should add connection object to list of connections', function () {
+      var s = Server();
+      var socket = {
+        id: 4321
+      };
+      ConnectionMock.returns(socket);
+      s.onConnected();
+      expect(this.addstub.calledWith(socket)).toBeTruthy();
+    });
+
+  });
+
   describe('.on(event, hander)', function () {
 
-    beforeEach(function(){
+    beforeEach(function () {
       this.socketon = sinon.stub();
       socketio.returns({
         on: this.socketon
@@ -148,7 +193,7 @@ describe("Server", function () {
 
     it("should be chainable", function () {
       var s = Server();
-      expect(s.on(null, function(){})).toEqual(s);
+      expect(s.on(null, function () {})).toEqual(s);
     });
 
 

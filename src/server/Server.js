@@ -4,9 +4,11 @@ var mime = require('mime');
 var socketio = require('socket.io');
 
 var fs = require('./FileSystem');
+var Connection = require('./Connection');
 
 var Server = function (port) {
   this.port = parseInt(port, 10);
+  this.connections = Connection.Collection();
   this.http = http.createServer(this.httpRequestHandler);
   this.socket = socketio(this.http);
 };
@@ -41,6 +43,11 @@ Server.prototype.httpRequestHandler = function (req, res) {
       res.end();
     }
   });
+};
+
+Server.prototype.onConnected = function (socket) {
+  var conn = Connection(socket);
+  this.connections.add(conn);
 };
 
 Server.prototype.on = function (event, handler) {
