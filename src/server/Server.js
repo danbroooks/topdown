@@ -15,6 +15,7 @@ var Server = function (port) {
 
 Server.prototype.listen = function () {
   this.http.listen(this.port);
+  this.on('connection', _.bind(this.onConnected, this));
   return this;
 };
 

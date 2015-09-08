@@ -5,6 +5,7 @@ describe("Server", function () {
 
   var httpMock = {};
   var fsMock = {};
+
   var socketio = sinon.stub();
   var ConnectionMock = sinon.stub();
   ConnectionMock.Collection = sinon.stub();
@@ -18,7 +19,16 @@ describe("Server", function () {
     './Connection': ConnectionMock
   });
 
+  beforeEach(function () {
+
+    this.socketon = sinon.stub();
+    socketio.returns({
+      on: this.socketon
+    });
+  });
+
   afterEach(function () {
+    this.socketon.reset();
     ConnectionMock.reset();
     ConnectionMock.Collection.reset();
   });
@@ -98,6 +108,15 @@ describe("Server", function () {
       expect(s instanceof Server.Constructor).toBeTruthy();
     });
 
+    it("should bind a new connection event", function () {
+      this.server.onConnected = sinon.stub();
+      this.server.listen();
+      expect(this.socketon.calledOnce).toBeTruthy();
+      expect(this.socketon.calledWith('connection')).toBeTruthy();
+      this.socketon.callArg(1);
+      expect(this.server.onConnected.called).toBeTruthy();
+    });
+
   });
 
   describe(".httpRequestHandler(req, res)", function () {
@@ -147,18 +166,10 @@ describe("Server", function () {
 
   describe('.on(event, hander)', function () {
 
-    beforeEach(function () {
-      this.socketon = sinon.stub();
-      socketio.returns({
-        on: this.socketon
-      });
-    });
-
     it("should be chainable", function () {
       var s = Server();
       expect(s.on(null, function () {})).toEqual(s);
     });
-
 
     it("should forward on events to this.socket", function () {
       var handler = sinon.stub();
