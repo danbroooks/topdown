@@ -53,6 +53,13 @@ Server.prototype.on = function (event, handler) {
 Server.prototype.onConnected = function (socket) {
   var conn = Connection(socket);
   this.connections.add(conn);
+  conn.on('disconnect', _.bind(this.onDisconnect, this));
+};
+
+Server.prototype.onDisconnect = function (socket) {
+  this.connections.remove(function (conn) {
+    return conn.id == socket.id;
+  });
 };
 
 var Factory = function (port) {
