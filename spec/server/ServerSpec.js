@@ -148,11 +148,13 @@ describe("Server", function () {
   describe('.onConnected(socket)', function () {
 
     beforeEach(function () {
-      var onstub = sinon.stub();
-      ConnectionMock.returns({
-        on: onstub
-      });
-      this.onstub = onstub;
+      var socket = {
+        id: 4321,
+        on: sinon.stub()
+      };
+
+      ConnectionMock.returns(socket);
+      this.socket = socket;
 
       var addstub = sinon.stub();
       ConnectionMock.Collection.returns({
@@ -162,22 +164,16 @@ describe("Server", function () {
     });
 
     it('should create a connection object from socket data', function () {
-      var s = Server();
-      var socket = {
+      var rawSocket = {
         id: 1234
       };
-      s.onConnected(socket);
-      expect(ConnectionMock.calledWith(socket)).toBeTruthy();
+      Server().onConnected(rawSocket);
+      expect(ConnectionMock.calledWith(rawSocket)).toBeTruthy();
     });
 
     it('should add connection object to list of connections', function () {
-      var s = Server();
-      var socket = {
-        id: 4321
-      };
-      ConnectionMock.returns(socket);
-      s.onConnected();
-      expect(this.addstub.calledWith(socket)).toBeTruthy();
+      Server().onConnected();
+      expect(this.addstub.calledWith(this.socket)).toBeTruthy();
     });
 
   });

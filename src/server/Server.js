@@ -45,14 +45,14 @@ Server.prototype.httpRequestHandler = function (req, res) {
   });
 };
 
-Server.prototype.onConnected = function (socket) {
-  var conn = Connection(socket);
-  this.connections.add(conn);
-};
-
 Server.prototype.on = function (event, handler) {
   this.socket.on(event, _.bind(handler, this));
   return this;
+};
+
+Server.prototype.onConnected = function (socket) {
+  var conn = Connection(socket);
+  this.connections.add(conn);
 };
 
 var Factory = function (port) {
