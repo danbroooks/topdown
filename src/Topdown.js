@@ -1,6 +1,7 @@
-
-var Server = require('./server/Server');
+var _ = require('lodash');
 var EventEmitter = require('events').EventEmitter;
+var Server = require('./server/Server');
+var RemoteClient = require('./server/RemoteClient');
 var Build = require('./util/Factory').Build;
 
 var Game = function () {
@@ -18,7 +19,13 @@ Game.prototype.trigger = function (event) {
 };
 
 Game.prototype.listen = function (port) {
-  Server.Listen(port);
+  var server = Server.Listen(port);
+  _.mapKeys(this.events._events, function (listener, event) {
+    server.on(event, function (socket) {
+      var cl = RemoteClient(socket);
+      listener(cl);
+    });
+  });
   return this;
 };
 
