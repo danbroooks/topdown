@@ -1,10 +1,11 @@
-var Client = function (render, controls) {
+var Client = function (render, controls, network) {
   this.render = render;
   this.controls = controls;
+  this.network = network;
 };
 
-var Factory = function (render) {
-  return new Client(render);
+var Factory = function (render, controls, network) {
+  return new Client(render, controls, network);
 };
 
 Factory.Constructor = Client;
