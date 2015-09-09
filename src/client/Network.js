@@ -10,6 +10,10 @@ Network.prototype.config = {
   'force new connection': true
 };
 
+Network.prototype.on = function (event, listener) {
+  this.socket.on(event, listener);
+};
+
 var Factory = Build(Network, function (server) {
   var opts = {};
   opts.server = server;
