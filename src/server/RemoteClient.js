@@ -1,8 +1,9 @@
 var Keymap = require('../Keymap');
+var Build = require('../util/Factory').Build;
 
-var RemoteClient = function () {
+var RemoteClient = function () {};
 
-};
+RemoteClient.prototype.id = undefined;
 
 RemoteClient.prototype.key = function (letter) {
   if (Keymap[letter] !== undefined) {
@@ -13,10 +14,8 @@ RemoteClient.prototype.key = function (letter) {
   throw new Error(msg);
 };
 
-var Factory = function () {
-  return new RemoteClient();
-};
-
-Factory.Constructor = RemoteClient;
-
-module.exports = Factory;
+module.exports = Build(RemoteClient, function (socket) {
+  var opts = {};
+  opts.id = socket.id;
+  return opts;
+});

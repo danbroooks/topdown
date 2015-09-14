@@ -5,13 +5,23 @@ describe("RemoteClient", function () {
 
   describe("Factory", function () {
     it("should return new instance", function () {
-      expect(RemoteClient() instanceof RemoteClient.Constructor).toBeTruthy();
+      expect(RemoteClient({
+        id: 1234
+      }) instanceof RemoteClient.Constructor).toBeTruthy();
+    });
+
+    it("should gain id of socket passed", function () {
+      expect(RemoteClient({
+        id: 1234
+      }).id).toEqual(1234);
     });
   });
 
   describe(".key(string)", function () {
     it("should translate string representation of a key into a keycode", function () {
-      var cl = RemoteClient();
+      var cl = RemoteClient({
+        id: 1234
+      });
       var keymap = require('../../src/Keymap.js');
       _.forOwn(keymap, function (val, key) {
         expect(cl.key(key)).toEqual(val);
@@ -19,7 +29,9 @@ describe("RemoteClient", function () {
     });
 
     it("should throw an error when passed an invalid string", function () {
-      var cl = RemoteClient();
+      var cl = RemoteClient({
+        id: 1234
+      });
 
       expect(function () {
         cl.key('some-invalid-string')
