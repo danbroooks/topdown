@@ -15,7 +15,9 @@ FileSystem.prototype.find = function (path, opts) {
     if (opts.paths.length) {
       self.find(path, opts);
     } else {
-      opts.failure();
+      opts.failure({
+        status: 'notfound'
+      });
     }
   });
 };

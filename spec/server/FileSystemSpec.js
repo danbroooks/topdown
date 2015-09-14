@@ -98,6 +98,16 @@ describe("FileSystem", function () {
       expect(this.failure.called).toBeTruthy();
     });
 
+    it('should trigger failure callback with an error object passed to it', function () {
+      opts.paths = ['project', 'core'];
+      fs.find('styles.css', opts);
+      expect(
+        this.failure.calledWith({
+          status: 'notfound'
+        })
+      ).toBeTruthy();
+    });
+
     it('should prefer the result from the location that comes first in the array', function () {
       opts.paths = ['project', 'core'];
       fs.find('script.js', opts);
