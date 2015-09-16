@@ -45,6 +45,8 @@ var Controls = function (win, doc) {
   doc.oncontextmenu = _.constant(false);
 };
 
+Controls.prototype.config = undefined;
+
 Controls.prototype.configure = function (config) {
   this.config = config;
 };
