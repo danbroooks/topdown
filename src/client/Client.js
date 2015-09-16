@@ -8,6 +8,7 @@ Client.prototype.network = undefined;
 
 Client.prototype.connect = function (server) {
   this.network.connect(server);
+  this.setupRenderer();
   this.setupControls();
 };
 
@@ -21,6 +22,19 @@ Client.prototype.setupControls = function () {
 
   controls.keystream.onValue(function (val) {
     network.emit('keystream', val);
+  });
+};
+
+Client.prototype.setupRenderer = function () {
+  var network = this.network;
+  var render = this.render;
+
+  network.on('addCanvas', function (data) {
+    render.addLayer(data);
+  });
+
+  network.on('render', function (res) {
+    render.draw(res.canvas, res.data);
   });
 };
 

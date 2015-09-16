@@ -42,6 +42,7 @@ describe("Client", function () {
       this.network.connect = sinon.stub();
       this.cl = Client(null, null, this.network);
       this.cl.setupControls = sinon.stub();
+      this.cl.setupRenderer = sinon.stub();
       this.cl.connect('localhost');
     });
 
@@ -51,6 +52,7 @@ describe("Client", function () {
 
     it("should then call event binding functions", function () {
       expect(this.cl.setupControls.calledOnce).toBeTruthy();
+      expect(this.cl.setupRenderer.calledOnce).toBeTruthy();
     });
   });
 
@@ -66,8 +68,7 @@ describe("Client", function () {
           onValue: sinon.stub()
         }
       };
-      var cl = Client(null, this.controls, this.network);
-      cl.setupControls();
+      Client(null, this.controls, this.network).setupControls();
     });
 
     it("should listen for a setControls event from server", function () {
@@ -80,10 +81,44 @@ describe("Client", function () {
       expect(this.controls.configure.calledWith(data)).toBeTruthy();
     });
 
-    it("should forward controls recieved from controls object over network", function () {
+    it("should forward controls received from controls object over network", function () {
       var keys = [21, 67];
       this.controls.keystream.onValue.yield(keys);
       expect(this.network.emit.calledWith('keystream', keys)).toBeTruthy();
+    });
+  });
+
+  describe(".setupRenderer()", function () {
+
+    beforeEach(function () {
+      this.network = {
+        on: sinon.stub()
+      };
+      this.render = {
+        draw: sinon.stub(),
+        addLayer: sinon.stub()
+      };
+      Client(this.render, null, this.network).setupRenderer();
+    });
+
+    it("should listen for an addCanvas event from server", function () {
+      expect(this.network.on.calledWith('addCanvas')).toBeTruthy();
+    });
+
+    it("should forward addLayer network data on to render.addLayer", function () {
+      var layer = 'foreground';
+      this.network.on.yield(layer);
+      expect(this.render.addLayer.calledWith(layer)).toBeTruthy();
+    });
+
+    it("should listen for a render event from server", function () {
+      expect(this.network.on.calledWith('render')).toBeTruthy();
+    });
+
+    it("should forward render network data to render.draw", function () {
+      var res = { canvas: 'foreground', data: [12, 12] };
+      this.network.on.yield(res);
+      expect(this.render.draw.calledWith(res.canvas, res.data)).toBeTruthy();
     });
   });
 });
