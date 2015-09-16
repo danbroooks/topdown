@@ -7,5 +7,7 @@ var Client = require('./src/client/Client.js');
 var c = Client(
   Render(document),
   Controls(window, document),
-  Network(window.location.protocol + '//' + window.location.host)
+  Network()
 );
+
+c.connect(window.location.protocol + '//' + window.location.host);
