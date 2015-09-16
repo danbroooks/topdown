@@ -9,14 +9,17 @@ describe("Network", function () {
 
   beforeEach(function () {
     this.socketon = sinon.stub();
+    this.socketemit = sinon.stub();
 
     iomock.connect.returns({
-      on: this.socketon
+      on: this.socketon,
+      emit: this.socketemit
     });
   });
 
   afterEach(function () {
     this.socketon.reset();
+    this.socketemit.reset();
   });
 
   var Network = proxyquire('../../src/client/Network', {
@@ -50,4 +53,13 @@ describe("Network", function () {
     });
   });
 
+  describe('.emit(event, data)', function () {
+
+    it("should forward on its arguments to this.socket.emit", function () {
+      var event = 'event-name';
+      var data = { health: 15 };
+      Network().emit(event, data);
+      expect(this.socketemit.firstCall.calledWith(event, data)).toBeTruthy();
+    });
+  });
 });

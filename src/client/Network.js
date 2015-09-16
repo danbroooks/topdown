@@ -16,6 +16,10 @@ Network.prototype.on = function (event, handler) {
   return this;
 };
 
+Network.prototype.emit = function (event, data) {
+  this.socket.emit(event, data);
+};
+
 var Factory = Build(Network, function (server) {
   var opts = {};
   opts.server = server;

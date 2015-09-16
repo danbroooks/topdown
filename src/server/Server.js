@@ -51,6 +51,10 @@ Server.prototype.on = function (event, handler) {
   return this;
 };
 
+Server.prototype.emit = function (event, data) {
+  this.socket.emit(event, data);
+};
+
 Server.prototype.onConnected = function (socket) {
   var conn = Connection(socket);
   this.connections.add(conn);

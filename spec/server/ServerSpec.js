@@ -20,15 +20,18 @@ describe("Server", function () {
   });
 
   beforeEach(function () {
-
     this.socketon = sinon.stub();
+    this.socketemit = sinon.stub();
+
     socketio.returns({
-      on: this.socketon
+      on: this.socketon,
+      emit: this.socketemit
     });
   });
 
   afterEach(function () {
     this.socketon.reset();
+    this.socketemit.reset();
     ConnectionMock.reset();
     ConnectionMock.Collection.reset();
   });
@@ -180,6 +183,15 @@ describe("Server", function () {
     });
   });
 
+  describe('.emit(event, data)', function () {
+    it("should forward on its arguments to this.socket.emit", function () {
+      var event = 'event-name';
+      var data = { health: 15 };
+      Server().emit(event, data);
+      expect(this.socketemit.firstCall.calledWith(event, data)).toBeTruthy();
+    });
+  });
+
   describe('.onConnected(socket)', function () {
 
     beforeEach(function () {
@@ -200,7 +212,7 @@ describe("Server", function () {
 
     afterEach(function () {
       this.socket.on.reset();
-    })
+    });
 
     it('should create a connection object from socket data', function () {
       var rawSocket = {
