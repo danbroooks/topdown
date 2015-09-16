@@ -7,8 +7,16 @@ describe("Network", function () {
 
   iomock.connect = sinon.stub();
 
-  iomock.connect.returns({
-    on: sinon.stub()
+  beforeEach(function () {
+    this.socketon = sinon.stub();
+
+    iomock.connect.returns({
+      on: this.socketon
+    });
+  });
+
+  afterEach(function () {
+    this.socketon.reset();
   });
 
   var Network = proxyquire('../../src/client/Network', {
@@ -26,14 +34,19 @@ describe("Network", function () {
     });
   });
 
-  describe(".on(event, listener)", function () {
+  describe('.on(event, hander)', function () {
 
-    it("should forward on event handler to socket property", function () {
+    it("should be chainable", function () {
       var n = Network();
-      n.socket.on = sinon.stub();
-      var handler = function () {};
-      n.on('some-event', handler);
-      expect(n.socket.on.calledWith('some-event', handler)).toBeTruthy();
+      expect(n.on(null, function () {})).toEqual(n);
+    });
+
+    it("should forward on events to this.socket", function () {
+      var handler = sinon.stub();
+      Network().on('event-name', handler);
+      expect(this.socketon.firstCall.args[0]).toEqual('event-name');
+      this.socketon.yield();
+      expect(handler.called).toBeTruthy();
     });
   });
 
