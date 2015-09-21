@@ -11,14 +11,18 @@ var Build = function (Class, preconstructor) {
   Root.prototype = obj;
 
   // create function for object creation
-  var Factory = function (opts) {
+  var Factory = function () {
 
     // create a new object
     obj = Object.create(Root.prototype);
 
+    var opts;
+
     // if the factory has a preconstructor, use it to pre-configure 'opts'
     if (preconstructor) {
       opts = preconstructor.apply(null, arguments);
+    } else {
+      opts = arguments[0];
     }
 
     // assign opts to our object
