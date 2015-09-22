@@ -1,5 +1,8 @@
+var Canvas = require('./Canvas');
+
 var Render = function (doc) {
   this.document = doc;
+  this.layers = {};
 };
 
 Render.prototype.addLayer = function (name) {
@@ -7,6 +10,7 @@ Render.prototype.addLayer = function (name) {
   var canvas = this.document.createElement('canvas');
   canvas.id = name;
   body.appendChild(canvas);
+  this.layers[name] = Canvas(canvas);
 };
 
 var Factory = function (doc) {
