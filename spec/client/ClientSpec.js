@@ -1,4 +1,3 @@
-
 describe("Client", function () {
 
   var sinon = require('sinon');
@@ -76,7 +75,9 @@ describe("Client", function () {
     });
 
     it("should pass data to controls when setControls event is received", function () {
-      var data = { up: 12 };
+      var data = {
+        up: 12
+      };
       this.network.on.yield(data);
       expect(this.controls.configure.calledWith(data)).toBeTruthy();
     });
@@ -95,9 +96,13 @@ describe("Client", function () {
         on: sinon.stub()
       };
       this.render = {
-        draw: sinon.stub(),
+        getLayer: sinon.stub(),
         addLayer: sinon.stub()
       };
+      this.canvas = {
+        draw: sinon.stub()
+      };
+      this.render.getLayer.returns(this.canvas);
       Client(this.render, null, this.network).setupRenderer();
     });
 
@@ -115,10 +120,14 @@ describe("Client", function () {
       expect(this.network.on.calledWith('render')).toBeTruthy();
     });
 
-    it("should forward render network data to render.draw", function () {
-      var res = { canvas: 'foreground', data: [12, 12] };
+    it("should forward render network data to canvas", function () {
+      var res = {
+        canvas: 'foreground',
+        data: [12, 12]
+      };
       this.network.on.yield(res);
-      expect(this.render.draw.calledWith(res.canvas, res.data)).toBeTruthy();
+      expect(this.render.getLayer.calledWith(res.canvas)).toBeTruthy();
+      expect(this.canvas.draw.calledWith(res.data)).toBeTruthy();
     });
   });
 });

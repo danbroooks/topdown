@@ -13,6 +13,10 @@ Render.prototype.addLayer = function (name) {
   this.layers[name] = Canvas(canvas);
 };
 
+Render.prototype.getLayer = function (name) {
+  return this.layers[name];
+};
+
 var Factory = function (doc) {
   return new Render(doc);
 };

@@ -34,11 +34,12 @@ Client.prototype.setupRenderer = function () {
   });
 
   network.on('render', function (res) {
-    render.draw(res.canvas, res.data);
+    var canvas = render.getLayer(res.canvas);
+    canvas.draw(res.data);
   });
 };
 
-module.exports = Build(Client, function(render, controls, network) {
+module.exports = Build(Client, function (render, controls, network) {
   var obj = {
     render: render,
     controls: controls,

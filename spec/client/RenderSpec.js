@@ -83,4 +83,21 @@ describe("Render", function () {
     });
   });
 
+  describe(".getLayer(name)", function () {
+    beforeEach(function () {
+      this.canv = Object.create({});
+      this.CanvasMock.returns(this.canv);
+      this.render = Render();
+      this.render.layers['foreground'] = this.canv;
+    });
+
+    it("should return requested layer", function () {
+      expect(this.render.getLayer('foreground')).toEqual(this.canv);
+    });
+
+    it("should return requested layer", function () {
+      expect(this.render.getLayer('background')).toEqual(undefined)
+    });
+  });
+
 });
