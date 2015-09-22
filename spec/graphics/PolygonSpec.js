@@ -56,6 +56,10 @@ describe("Polygon", function () {
 
       expect(arrPoly.points.length).toBe(3);
       expect(arrPoly.points[2] instanceof Point.Constructor).toBeTruthy();
+
+      expect(arrPoly.points[0].y).toEqual(0);
+      expect(arrPoly.points[1].x).toEqual(20);
+      expect(arrPoly.points[2].y).toEqual(10);
     });
 
   });

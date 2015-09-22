@@ -50,8 +50,8 @@ var Factory = Build(Polygon, function () {
       throw new Error('.points array contains incorrect number of values to make a point (2).');
     }
 
-    opts.points = _.map(opts.points, function (x, y) {
-      return Point(x, y);
+    opts.points = _.map(opts.points, function (pts) {
+      return Point(pts);
     });
   }
 
