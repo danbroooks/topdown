@@ -7,7 +7,7 @@ var fs = require('./FileSystem');
 var Connection = require('./Connection');
 
 var Server = function (port) {
-  this.port = parseInt(port, 10);
+  this.setPort(port);
   this.connections = Connection.Collection();
   this.http = http.createServer(this.httpRequestHandler);
   this.socket = socketio(this.http);
@@ -16,6 +16,11 @@ var Server = function (port) {
 Server.prototype.listen = function () {
   this.http.listen(this.port);
   this.on('connection', _.bind(this.onConnected, this));
+  return this;
+};
+
+Server.prototype.setPort = function (port) {
+  this.port = parseInt(port, 10);
   return this;
 };
 
