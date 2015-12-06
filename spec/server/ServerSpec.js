@@ -178,7 +178,9 @@ describe("Server", function () {
       var handler = sinon.stub();
       Server().on('event-name', handler);
       expect(this.socketon.firstCall.args[0]).toEqual('event-name');
-      this.socketon.yield();
+      this.socketon.yield({
+        id: 'abc'
+      });
       expect(handler.called).toBeTruthy();
     });
   });

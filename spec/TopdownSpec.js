@@ -6,10 +6,14 @@ var proxyquire = require('proxyquire');
 describe("Topdown", function () {
 
   var ServerMock = {};
+  ServerMock.setPort = sinon.stub().returns(ServerMock);
+  ServerMock.listen = sinon.stub().returns(ServerMock);
 
   beforeEach(function () {
     this.game = proxyquire('../src/Topdown', {
-      './server/Server': ServerMock
+      './server/Server': function () {
+        return ServerMock;
+      }
     });
   });
 
@@ -48,15 +52,13 @@ describe("Topdown", function () {
   describe('.listen(port)', function () {
 
     it('should call server listen', function () {
-      ServerMock.Listen = sinon.stub();
       this.game.listen(80);
-      expect(ServerMock.Listen.called).toBeTruthy();
+      expect(ServerMock.listen.called).toBeTruthy();
     });
 
     it('should pass appropriate port to server listen', function () {
-      ServerMock.Listen = sinon.stub();
       this.game.listen(80);
-      expect(ServerMock.Listen.calledWith(80)).toBeTruthy();
+      expect(ServerMock.setPort.calledWith(80)).toBeTruthy();
     });
   });
 });

@@ -5,6 +5,7 @@ var socketio = require('socket.io');
 
 var fs = require('./FileSystem');
 var Connection = require('./Connection');
+var RemoteClient = require('./RemoteClient');
 
 var Server = function (port) {
   this.setPort(port);
@@ -14,8 +15,12 @@ var Server = function (port) {
 };
 
 Server.prototype.listen = function () {
+  if (!this.port) {
+    throw new Error("Unable to start server, invalid port");
+  }
+
   this.http.listen(this.port);
-  this.on('connection', _.bind(this.onConnected, this));
+  this.socket.on('connection', _.bind(this.onConnected, this));
   return this;
 };
 
@@ -52,7 +57,11 @@ Server.prototype.httpRequestHandler = function (req, res) {
 };
 
 Server.prototype.on = function (event, handler) {
-  this.socket.on(event, _.bind(handler, this));
+  this.socket.on(event, _.bind(function(socket) {
+    var rc = RemoteClient(socket);
+    handler.apply(this, [rc]);
+  }, this));
+
   return this;
 };
 
