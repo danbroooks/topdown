@@ -56,7 +56,7 @@ Canvas.prototype.renderShape = function (points, fill, stroke) {
   for (var j = 0; j < points.length; j++) {
     var pts = points[j];
     var lineTo = j ? ctx.lineTo : ctx.moveTo;
-    lineTo(pts[0], pts[1]);
+    lineTo.call(ctx, pts[0], pts[1]);
   }
 
   ctx.closePath();
