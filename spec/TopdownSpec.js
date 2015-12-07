@@ -36,7 +36,7 @@ describe("Topdown", function () {
       this.game.trigger('connect');
     });
 
-    it("should be able chainable", function () {
+    it("should be chainable", function () {
       var game = this.game;
 
       expect(function(){
