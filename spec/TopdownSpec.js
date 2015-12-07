@@ -47,6 +47,29 @@ describe("Topdown", function () {
 
       }).not.toThrow();
     });
+
+    it("should forward prefixed events", function () {
+
+      var game = this.game;
+      game.forward = sinon.stub();
+      var handler = _.noop;
+
+      game.on('server:connected', handler);
+      expect(game.forward.calledWith('server', 'connected', handler)).toBeTruthy();
+
+      game.forward.reset();
+    });
+  });
+
+  describe(".forward(to, event, listener)", function () {
+
+    it("should forward server events to the server object", function () {
+      var game = this.game;
+      game.server = { on: sinon.stub() };
+      var handler = _.noop;
+      game.forward('server', 'connected', handler);
+      expect(game.server.on.calledWith('connected', handler)).toBeTruthy();
+    });
   });
 
   describe('.listen(port)', function () {
