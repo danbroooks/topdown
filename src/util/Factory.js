@@ -5,7 +5,7 @@ var Build = function (Class, preconstructor) {
   // create a new object from Factory's class
   var obj = Object.create(Class.prototype);
 
-  // root object for adding additonal object functionality
+  // root object for adding additional object functionality
   function Root() {};
 
   Root.prototype = obj;
