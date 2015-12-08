@@ -59,6 +59,11 @@ describe("RemoteClient", function () {
       it("should call pass appropriate arguments to emit", function () {
         expect(this.socket.emit.calledWith('addCanvas', 'foreground')).toBeTruthy();
       });
+
+      it("should be chainable", function () {
+        var call_result = RemoteClient(this.socket).addCanvas('foreground');
+        expect(call_result instanceof RemoteClient.Constructor).toBeTruthy();
+      });
     });
 
     describe(".setControls", function () {
@@ -72,6 +77,11 @@ describe("RemoteClient", function () {
 
       it("should call pass appropriate arguments to emit", function () {
         expect(this.socket.emit.calledWith('setControls', { up: 35 })).toBeTruthy();
+      });
+
+      it("should be chainable", function () {
+        var call_result = RemoteClient(this.socket).setControls({ up: 35 });
+        expect(call_result instanceof RemoteClient.Constructor).toBeTruthy();
       });
     });
 
@@ -87,6 +97,11 @@ describe("RemoteClient", function () {
 
       it("should call pass appropriate arguments to emit", function () {
         expect(this.socket.emit.calledWith('render', this.points)).toBeTruthy();
+      });
+
+      it("should be chainable", function () {
+        var call_result = RemoteClient(this.socket).render(this.points);
+        expect(call_result instanceof RemoteClient.Constructor).toBeTruthy();
       });
     });
   });

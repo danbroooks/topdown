@@ -22,14 +22,17 @@ RemoteClient.prototype.key = function (letter) {
 
 RemoteClient.prototype.addCanvas = function (name) {
   io(this).emit('addCanvas', name);
+  return this;
 };
 
 RemoteClient.prototype.setControls = function (config) {
   io(this).emit('setControls', config);
+  return this;
 };
 
 RemoteClient.prototype.render = function (data) {
   io(this).emit('render', data);
+  return this;
 };
 
 module.exports = Build(RemoteClient, function (socket) {
