@@ -3,6 +3,14 @@ describe("Connection", function () {
   var sinon = require('sinon');
   var Connection = require('../../src/server/Connection');
 
+  function hash() {
+    return Math.random().toString(36).substring(11);
+  }
+
+  function socket_mock() {
+    return { id: hash() };
+  }
+
   describe("Factory", function () {
 
     it("should return new instance", function () {
@@ -14,6 +22,11 @@ describe("Connection", function () {
       col.add(Connection(sinon.mock()));
       col.add("Connection");
       expect(col.length).toEqual(1);
+    });
+
+    it("should return same instance of connection when same socket passed in to constructor", function () {
+      var socket = socket_mock();
+      expect(Connection(socket) === Connection(socket)).toBeTruthy();
     });
 
   });
@@ -31,52 +44,55 @@ describe("Connection", function () {
 
   describe(".on", function () {
 
-    var conn, onconnect;
-    var mock = {};
-
     beforeEach(function () {
+      var mock = socket_mock();
       mock.on = sinon.stub();
-      conn = Connection(mock);
-      onconnect = function () {};
+      var conn = Connection(mock);
+      function onconnect() {};
       conn.on('connect', onconnect);
+
+      this.mock = mock;
+      this.onconnect = onconnect;
     });
 
     afterEach(function () {
-      mock.on.reset();
+      this.mock.on.reset();
     });
 
     it("should forward events socket.on", function () {
-      expect(mock.on.called).toBeTruthy();
+      expect(this.mock.on.called).toBeTruthy();
     });
 
     it("should directly pass arguments to socket.on", function () {
-      expect(mock.on.calledWith('connect', onconnect)).toBeTruthy();
+      expect(this.mock.on.calledWith('connect', this.onconnect)).toBeTruthy();
     });
 
   });
 
   describe(".emit", function () {
 
-    var conn, data;
-    var mock = {};
-
     beforeEach(function () {
+      var mock = socket_mock();
       mock.emit = sinon.stub();
-      conn = Connection(mock);
-      data = {};
+      var conn = Connection(mock);
+      data = { a: 12 };
       conn.emit('update', data);
+
+      this.conn = conn;
+      this.mock = mock;
+      this.data = data;
     });
 
     afterEach(function () {
-      mock.emit.reset();
+      this.mock.emit.reset();
     });
 
     it("should forward events socket.emit", function () {
-      expect(mock.emit.called).toBeTruthy();
+      expect(this.mock.emit.called).toBeTruthy();
     });
 
     it("should directly pass arguments to socket.emit", function () {
-      expect(mock.emit.calledWith('update', data)).toBeTruthy();
+      expect(this.mock.emit.calledWith('update', this.data)).toBeTruthy();
     });
 
   });
@@ -86,7 +102,7 @@ describe("Connection", function () {
     beforeEach(function () {
       var clock = this.clock = sinon.useFakeTimers();
 
-      var mock = {};
+      var mock = socket_mock();
       mock.emit = function () {};
       sinon.stub(mock, 'emit', function (event, cb) {
         clock.tick(500);

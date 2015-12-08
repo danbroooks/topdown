@@ -1,5 +1,7 @@
 var Collection = require('../util/Collection');
 
+var connections = {};
+
 var Connection = function (socket) {
   this.socket = socket;
   this.id = socket.id;
@@ -27,7 +29,14 @@ Connection.prototype.latency = function () {
 };
 
 var Factory = function (socket) {
-  return new Connection(socket);
+  var conn = connections[socket.id];
+
+  if (!conn) {
+    conn = new Connection(socket);
+    connections[socket.id] = conn;
+  }
+
+  return conn;
 };
 
 Factory.Collection = function () {
