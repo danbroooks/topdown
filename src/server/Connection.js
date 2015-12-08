@@ -1,10 +1,12 @@
 var Collection = require('../util/Collection');
+var RemoteClient = require('./RemoteClient');
 
 var connections = {};
 
 var Connection = function (socket) {
   this.socket = socket;
   this.id = socket.id;
+  this.client = RemoteClient(this);
 };
 
 Connection.prototype.on = function (event, handler) {
@@ -18,7 +20,7 @@ Connection.prototype.emit = function (event, data) {
 Connection.prototype.ping = function () {
   var start = Date.now();
   var conn = this;
-  this.emit('ping', function () {
+  conn.emit('ping', function () {
     conn._latency = (Date.now() - start);
   });
 };

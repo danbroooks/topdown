@@ -1,10 +1,10 @@
 var Keymap = require('../Keymap');
 var Build = require('../util/Factory').Build;
 
-var sockets = {};
+var connections = {};
 
 function io(rc) {
-  return sockets[rc.id];
+  return connections[rc.id];
 }
 
 var RemoteClient = function () {};
@@ -35,11 +35,11 @@ RemoteClient.prototype.render = function (data) {
   return this;
 };
 
-module.exports = Build(RemoteClient, function (socket) {
+module.exports = Build(RemoteClient, function (connection) {
 
-  sockets[socket.id] = socket;
+  connections[connection.id] = connection;
 
   var opts = {};
-  opts.id = socket.id;
+  opts.id = connection.id;
   return opts;
 });

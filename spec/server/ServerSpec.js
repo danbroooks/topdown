@@ -197,45 +197,30 @@ describe("Server", function () {
   describe('.onConnected(socket)', function () {
 
     beforeEach(function () {
-      var socket = {
-        id: 4321,
+      this.connection = {
         on: sinon.stub()
       };
 
-      ConnectionMock.returns(socket);
-      this.socket = socket;
-
-      var addstub = sinon.stub();
+      var connection_add = sinon.stub();
       ConnectionMock.Collection.returns({
-        add: addstub
+        add: connection_add
       });
-      this.addstub = addstub;
+      this.connection_add = connection_add;
     });
 
-    afterEach(function () {
-      this.socket.on.reset();
-    });
-
-    it('should create a connection object from socket data', function () {
-      var rawSocket = {
-        id: 1234
-      };
-      Server().onConnected(rawSocket);
-      expect(ConnectionMock.calledWith(rawSocket)).toBeTruthy();
-    });
-
-    it('should add connection object to list of connections', function () {
-      Server().onConnected();
-      expect(this.addstub.calledWith(this.socket)).toBeTruthy();
+    it('should add connection object passed into the list of connections', function () {
+      var connection = this.connection;
+      Server().onConnected(connection);
+      expect(this.connection_add.calledWith(connection)).toBeTruthy();
     });
 
     it('should bind disconnect event to new connection', function () {
       var s = Server();
       s.onDisconnect = sinon.stub();
-      s.onConnected();
-      expect(this.socket.on.called).toBeTruthy();
-      expect(this.socket.on.calledWith('disconnect')).toBeTruthy();
-      this.socket.on.callArg(1);
+      s.onConnected(this.connection);
+      expect(this.connection.on.called).toBeTruthy();
+      expect(this.connection.on.calledWith('disconnect')).toBeTruthy();
+      this.connection.on.callArg(1);
       expect(s.onDisconnect.called).toBeTruthy();
     });
 

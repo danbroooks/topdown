@@ -1,4 +1,4 @@
-var _ = require('lodash');
+var bind = require('lodash').bind;
 var EventEmitter = require('events').EventEmitter;
 var Server = require('./server/Server');
 var Build = require('./util/Factory').Build;
@@ -12,7 +12,7 @@ Game.prototype.on = function (event, listener) {
   var params = event.split(':');
 
   if (params.length == 1) {
-    this.events.on(params[0], listener);
+    this.events.on(params[0], bind(listener, this));
   } else if (params.length == 2) {
     this.forward(params[0], params[1], listener);
   }
@@ -26,8 +26,8 @@ Game.prototype.forward = function (to, event, listener) {
   }
 };
 
-Game.prototype.trigger = function (event) {
-  this.events.emit(event);
+Game.prototype.trigger = function (event, payload) {
+  this.events.emit(event, payload);
   return this;
 };
 

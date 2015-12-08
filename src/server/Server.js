@@ -5,7 +5,6 @@ var socketio = require('socket.io');
 
 var fs = require('./FileSystem');
 var Connection = require('./Connection');
-var RemoteClient = require('./RemoteClient');
 
 var Server = function (port) {
   this.setPort(port);
@@ -20,7 +19,7 @@ Server.prototype.listen = function () {
   }
 
   this.http.listen(this.port);
-  this.socket.on('connection', _.bind(this.onConnected, this));
+  this.on('connection', _.bind(this.onConnected, this));
   return this;
 };
 
@@ -58,8 +57,8 @@ Server.prototype.httpRequestHandler = function (req, res) {
 
 Server.prototype.on = function (event, handler) {
   this.socket.on(event, _.bind(function(socket) {
-    var rc = RemoteClient(socket);
-    handler.apply(this, [rc]);
+    var conn = Connection(socket);
+    handler.apply(this, [conn]);
   }, this));
 
   return this;
@@ -69,15 +68,14 @@ Server.prototype.emit = function (event, data) {
   this.socket.emit(event, data);
 };
 
-Server.prototype.onConnected = function (socket) {
-  var conn = Connection(socket);
-  this.connections.add(conn);
-  conn.on('disconnect', _.bind(this.onDisconnect, this));
+Server.prototype.onConnected = function (connection) {
+  this.connections.add(connection);
+  connection.on('disconnect', _.bind(this.onDisconnect, this));
 };
 
-Server.prototype.onDisconnect = function (socket) {
+Server.prototype.onDisconnect = function (connection) {
   this.connections.remove(function (conn) {
-    return conn.id == socket.id;
+    return conn === connection;
   });
 };
 
