@@ -96,6 +96,7 @@ describe("Client", function () {
         on: sinon.stub()
       };
       this.render = {
+        refresh: sinon.stub(),
         getLayer: sinon.stub(),
         addLayer: sinon.stub()
       };
@@ -126,6 +127,7 @@ describe("Client", function () {
         data: [12, 12]
       };
       this.network.on.yield(res);
+      expect(this.render.refresh.called).toBeTruthy();
       expect(this.render.getLayer.calledWith(res.canvas)).toBeTruthy();
       expect(this.canvas.draw.calledWith(res.data)).toBeTruthy();
     });

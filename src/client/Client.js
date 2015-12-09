@@ -35,6 +35,7 @@ Client.prototype.setupRenderer = function () {
 
   network.on('render', function (res) {
     var canvas = render.getLayer(res.canvas);
+    render.refresh();
     canvas.draw(res.data);
   });
 };

@@ -83,6 +83,31 @@ describe("Render", function () {
     });
   });
 
+  describe(".refresh", function () {
+    it("should", function () {
+      var canvas_mock = {};
+      canvas_mock.setWidth = sinon.stub();
+      canvas_mock.setHeight = sinon.stub();
+      canvas_mock.clear = sinon.stub();
+
+      var r = Render();
+      r.layers['canvas_mock'] = canvas_mock;
+
+      r.getViewport = sinon.stub();
+
+      r.getViewport.returns({
+        height: 360,
+        width: 480
+      });
+
+      r.refresh();
+
+      expect(canvas_mock.setHeight.calledWith(360)).toBeTruthy();
+      expect(canvas_mock.setWidth.calledWith(480)).toBeTruthy();
+      expect(canvas_mock.clear.called).toBeTruthy();
+    });
+  });
+
   describe(".getLayer(name)", function () {
     beforeEach(function () {
       this.canv = Object.create({});

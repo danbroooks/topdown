@@ -1,3 +1,4 @@
+var _ = require('lodash');
 var Canvas = require('./Canvas');
 
 var Render = function (doc) {
@@ -11,6 +12,23 @@ Render.prototype.addLayer = function (name) {
   canvas.id = name;
   body.appendChild(canvas);
   this.layers[name] = Canvas(canvas);
+};
+
+Render.prototype.refresh = function () {
+  var viewport = this.getViewport();
+  _.each(this.layers, function (canvas) {
+    canvas.setWidth(viewport.width);
+    canvas.setHeight(viewport.height);
+    canvas.clear();
+  });
+};
+
+Render.prototype.getViewport = function () {
+  var doc = this.document.documentElement;
+  var viewport = {};
+  viewport.width = doc.clientWidth;
+  viewport.height = doc.clientHeight;
+  return viewport;
 };
 
 Render.prototype.getLayer = function (name) {
