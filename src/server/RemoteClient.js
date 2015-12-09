@@ -30,8 +30,11 @@ RemoteClient.prototype.setControls = function (config) {
   return this;
 };
 
-RemoteClient.prototype.render = function (data) {
-  io(this).emit('render', data);
+RemoteClient.prototype.render = function (canvas, data) {
+  io(this).emit('render', {
+    canvas: canvas,
+    data: data
+  });
   return this;
 };
 

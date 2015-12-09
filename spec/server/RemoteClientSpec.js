@@ -88,7 +88,7 @@ describe("RemoteClient", function () {
     describe(".render", function () {
       beforeEach(function () {
         this.points = { points: [ [ 32, 43], [ 50, 40 ] ] };
-        RemoteClient(this.socket).render(this.points);
+        RemoteClient(this.socket).render('foreground', this.points);
       });
 
       it("should call emit method on socket", function () {
@@ -96,7 +96,11 @@ describe("RemoteClient", function () {
       });
 
       it("should call pass appropriate arguments to emit", function () {
-        expect(this.socket.emit.calledWith('render', this.points)).toBeTruthy();
+        var expected_payload = {
+          data: this.points,
+          canvas: 'foreground'
+        };
+        expect(this.socket.emit.calledWith('render', expected_payload)).toBeTruthy();
       });
 
       it("should be chainable", function () {
