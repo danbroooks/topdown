@@ -22,6 +22,20 @@ var Polygon = function () {
 };
 
 /**
+ * Collection of points that make up the Polygon
+ *
+ * @type {Array}
+ */
+Polygon.prototype.points = [];
+
+
+Polygon.prototype.rotate = function (deg) {
+  _.each(this.points, function (pt) {
+    pt.rotate(deg);
+  });
+};
+
+/**
  *
  * @constructor
  */

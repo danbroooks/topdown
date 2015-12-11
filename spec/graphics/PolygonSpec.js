@@ -64,4 +64,29 @@ describe("Polygon", function () {
 
   });
 
+  describe(".rotate", function () {
+
+    it("should", function () {
+      var poly = Polygon([
+        [-5, -10],
+        [-5, 10],
+        [5, 10],
+        [5, -10],
+      ]);
+
+      poly.rotate(90);
+
+      expect(poly.points[0].x).toEqual(10);
+      expect(poly.points[0].y).toEqual(-5);
+
+      expect(poly.points[1].x).toEqual(-10);
+      expect(poly.points[1].y).toEqual(-5);
+
+      expect(poly.points[2].x).toEqual(-10);
+      expect(poly.points[2].y).toEqual(5);
+
+      expect(poly.points[3].x).toEqual(10);
+      expect(poly.points[3].y).toEqual(5);
+    });
+  });
 });
