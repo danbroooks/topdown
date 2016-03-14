@@ -78,4 +78,14 @@ var Factory = Build(Polygon, function () {
   return opts;
 });
 
+/**
+ * @param polygon
+ * @returns {*}
+ */
+Factory.Clone = function (polygon) {
+  return Factory(
+    polygon.points.map(Point.Clone)
+  );
+};
+
 module.exports = Factory;

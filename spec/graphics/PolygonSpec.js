@@ -64,6 +64,25 @@ describe("Polygon", function () {
 
   });
 
+  describe(".Clone", function () {
+    it("should clone object", function () {
+      var poly = Polygon([
+        [0, 0],
+        [20, 0],
+        [10, 10]
+      ]);
+
+      var clone = Polygon.Clone(poly);
+
+      expect(poly !== clone).toBeTruthy();
+      expect(poly.points !== clone.points).toBeTruthy();
+
+      clone.rotate(2);
+      expect(poly.points[0] !== clone.points[0]).toBeTruthy();
+    });
+
+  });
+
   describe(".rotate", function () {
 
     it("should", function () {
