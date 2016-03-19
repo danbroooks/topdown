@@ -198,7 +198,8 @@ describe("Server", function () {
 
     beforeEach(function () {
       this.connection = {
-        on: sinon.stub()
+        on: sinon.stub(),
+        emit: sinon.stub(),
       };
 
       var connection_add = sinon.stub();

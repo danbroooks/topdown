@@ -69,8 +69,12 @@ Server.prototype.emit = function (event, data) {
 };
 
 Server.prototype.onConnected = function (connection) {
-  this.connections.add(connection);
-  connection.on('disconnect', _.bind(this.onDisconnect, this));
+  var server = this;
+  server.connections.add(connection);
+  connection.on('disconnect', function (event) {
+    connection.emit('disconnected');
+    server.onDisconnect.apply(server, [connection]);
+  });
 };
 
 Server.prototype.onDisconnect = function (connection) {
