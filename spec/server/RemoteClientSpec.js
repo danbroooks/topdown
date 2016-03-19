@@ -108,5 +108,20 @@ describe("RemoteClient", function () {
         expect(call_result instanceof RemoteClient.Constructor).toBeTruthy();
       });
     });
+
+    describe(".on", function () {
+      beforeEach(function () {
+        this.socket = { on: _.noop };
+        spyOn(this.socket, 'on');
+
+        this.someHandler = function () {};
+        RemoteClient(this.socket).on('keystream', this.someHandler);
+      });
+
+      it("should forward event name and handler to socket", function () {
+        expect(this.socket.on).toHaveBeenCalled();
+        expect(this.socket.on).toHaveBeenCalledWith('keystream', this.someHandler);
+      });
+    });
   });
 });

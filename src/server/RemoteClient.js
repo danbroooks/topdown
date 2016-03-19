@@ -35,6 +35,13 @@ RemoteClient.prototype.render = function (canvas, data) {
     canvas: canvas,
     data: data
   });
+
+  return this;
+};
+
+RemoteClient.prototype.on = function (event, handler) {
+  io(this).on(event, handler);
+
   return this;
 };
 
