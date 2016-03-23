@@ -1,6 +1,6 @@
 {
   "name": "topdown",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "A 2D topdown game framework built with node.js",
   "scripts": {
     "test": "gulp jasmine"
