@@ -2,6 +2,7 @@ var _ = require('lodash');
 var http = require('http');
 var mime = require('mime');
 var socketio = require('socket.io');
+var EventEmitter = require('events').EventEmitter;
 
 var fs = require('./FileSystem');
 var Connection = require('./Connection');
@@ -10,6 +11,7 @@ var Server = function (port) {
   this.setPort(port);
   this.connections = Connection.Collection();
   this.http = http.createServer(this.httpRequestHandler);
+  this.events = new EventEmitter();
   this.socket = socketio(this.http);
 };
 
@@ -19,7 +21,7 @@ Server.prototype.listen = function () {
   }
 
   this.http.listen(this.port);
-  this.on('connection', _.bind(this.onConnected, this));
+  this.socket.on('connection', _.bind(this.onConnected, this));
   return this;
 };
 
@@ -56,31 +58,30 @@ Server.prototype.httpRequestHandler = function (req, res) {
 };
 
 Server.prototype.on = function (event, handler) {
-  this.socket.on(event, _.bind(function(socket) {
-    var conn = Connection(socket);
-    handler.apply(this, [conn]);
-  }, this));
+  this.events.on(event, handler);
 
   return this;
 };
 
-Server.prototype.emit = function (event, data) {
-  this.socket.emit(event, data);
-};
+Server.prototype.onConnected = function (socket) {
 
-Server.prototype.onConnected = function (connection) {
-  var server = this;
-  server.connections.add(connection);
-  connection.on('disconnect', function (event) {
-    connection.emit('disconnected');
-    server.onDisconnect.apply(server, [connection]);
-  });
+  var connection = Connection(socket);
+
+  this.connections.add(connection);
+
+  this.events.emit('connected', connection);
+
+  connection.on('disconnect', this.onDisconnect.bind(this, connection));
 };
 
 Server.prototype.onDisconnect = function (connection) {
+  connection.emit('disconnected');
+
   this.connections.remove(function (conn) {
     return conn === connection;
   });
+
+  this.events.emit('disconnected', connection);
 };
 
 var Factory = function (port) {

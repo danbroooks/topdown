@@ -3,20 +3,25 @@ describe("Server", function () {
   var sinon = require('sinon');
   var proxyquire = require('proxyquire');
 
+  function hash() {
+    return Math.random().toString(36).substring(11);
+  }
+
+  function socket_mock() {
+    return { id: hash() };
+  }
+
   var httpMock = {};
   var fsMock = {};
 
   var socketio = sinon.stub();
-  var ConnectionMock = sinon.stub();
-  ConnectionMock.Collection = sinon.stub();
 
   var Server = proxyquire('../../src/server/Server', {
     'http': httpMock,
     'socket.io': socketio,
     './FileSystem': function () {
       return fsMock;
-    },
-    './Connection': ConnectionMock
+    }
   });
 
   beforeEach(function () {
@@ -32,8 +37,6 @@ describe("Server", function () {
   afterEach(function () {
     this.socketon.reset();
     this.socketemit.reset();
-    ConnectionMock.reset();
-    ConnectionMock.Collection.reset();
   });
 
   describe("Factory", function () {
@@ -167,87 +170,92 @@ describe("Server", function () {
 
   });
 
-  describe('.on(event, hander)', function () {
+  describe('.on', function () {
 
-    it("should be chainable", function () {
-      var s = Server();
-      expect(s.on(null, function () {})).toEqual(s);
+    beforeEach(function () {
+      this.server = Server();
     });
 
-    it("should forward on events to this.socket", function () {
-      var handler = sinon.stub();
-      Server().on('event-name', handler);
-      expect(this.socketon.firstCall.args[0]).toEqual('event-name');
-      this.socketon.yield({
-        id: 'abc'
-      });
-      expect(handler.called).toBeTruthy();
+    it("on should be chainable", function () {
+      expect(this.server.on(null, function () {})).toEqual(this.server);
     });
-  });
 
-  describe('.emit(event, data)', function () {
-    it("should forward on its arguments to this.socket.emit", function () {
-      var event = 'event-name';
-      var data = { health: 15 };
-      Server().emit(event, data);
-      expect(this.socketemit.firstCall.calledWith(event, data)).toBeTruthy();
+    it("should bind event listeners to server.events event emitter", function (done) {
+      this.server.on('complete', done);
+
+      this.server.events.emit('complete');
     });
   });
 
   describe('.onConnected(socket)', function () {
 
     beforeEach(function () {
-      this.connection = {
-        on: sinon.stub(),
-        emit: sinon.stub(),
+      this.server = Server();
+
+      this.server.connections = {
+        add: sinon.stub()
       };
 
-      var connection_add = sinon.stub();
-      ConnectionMock.Collection.returns({
-        add: connection_add
-      });
-      this.connection_add = connection_add;
+      this.socket = socket_mock();
+      this.socket.on = sinon.stub();
+    });
+
+    afterEach(function () {
+      this.server.connections.add.reset();
+      this.socket.on.reset();
     });
 
     it('should add connection object passed into the list of connections', function () {
-      var connection = this.connection;
-      Server().onConnected(connection);
-      expect(this.connection_add.calledWith(connection)).toBeTruthy();
+      this.server.onConnected(this.socket);
+      expect(this.server.connections.add.called).toBeTruthy();
     });
 
-    it('should bind disconnect event to new connection', function () {
-      var s = Server();
-      s.onDisconnect = sinon.stub();
-      s.onConnected(this.connection);
-      expect(this.connection.on.called).toBeTruthy();
-      expect(this.connection.on.calledWith('disconnect')).toBeTruthy();
-      this.connection.on.callArg(1);
-      expect(s.onDisconnect.called).toBeTruthy();
+    it("should emit 'connected' event", function () {
+      this.server.events.emit = sinon.stub();
+      this.server.onConnected(this.socket);
+      expect(this.server.events.emit.called).toBeTruthy();
+    });
+
+    it("should bind socket's disconnect event to 'onDisconnect'", function () {
+      this.server.onDisconnect = sinon.stub();
+
+      this.server.onConnected(this.socket);
+
+      expect(this.socket.on.called).toBeTruthy();
+      expect(this.socket.on.calledWith('disconnect')).toBeTruthy();
+
+      this.socket.on.yield();
+
+      expect(this.server.onDisconnect.called).toBeTruthy();
     });
 
   });
 
   describe('.onDisconnect(socket)', function () {
 
+    beforeEach(function () {
+      this.server = Server();
+      this.connection = { emit: sinon.stub() };
+    });
+
     it('should call remove on server\'s connection list', function () {
-      var s = Server();
-      s.connections.remove = sinon.stub();
-      s.onDisconnect();
-      expect(s.connections.remove.calledOnce).toBeTruthy();
+      this.server.connections.remove = sinon.stub();
+      this.server.onDisconnect(this.connection);
+      expect(this.server.connections.remove.calledOnce).toBeTruthy();
     });
 
     // @todo: must be a better way of testing this than this test...
     it('should remove connection from connection list based on matching id property', function () {
-      var s = Server();
-      var validConn = {
-        id: 12345
-      };
-      var invalidConn = {
-        id: 54321
-      };
-      var trigger = function () {};
+      var s = this.server;
 
-      s.connections.remove = function (cb) {
+      var validConn = socket_mock();
+      validConn.emit = sinon.stub();
+
+      var invalidConn = socket_mock();
+      invalidConn.emit = sinon.stub();
+
+      var trigger = function () {};
+       s.connections.remove = function (cb) {
         trigger = function () {
           return cb(validConn);
         };

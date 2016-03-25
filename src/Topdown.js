@@ -9,30 +9,30 @@ var Game = function () {
 };
 
 Game.prototype.on = function (event, listener) {
-  var params = event.split(':');
-
-  if (params.length == 1) {
-    this.events.on(params[0], bind(listener, this));
-  } else if (params.length == 2) {
-    this.forward(params[0], params[1], listener);
-  }
+  this.events.on(event, bind(listener, this));
 
   return this;
 };
 
-Game.prototype.forward = function (to, event, listener) {
-  if (to == 'server') {
-    return this.server.on(event, listener);
-  }
+Game.prototype.join = function (connection) {
+  this.trigger('join', connection, this.server);
 };
 
-Game.prototype.trigger = function (event, payload) {
-  this.events.emit(event, payload);
+Game.prototype.leave = function (connection) {
+  this.trigger('leave', connection, this.server);
+};
+
+Game.prototype.trigger = function () {
+  this.events.emit.apply(this.events, arguments);
+
   return this;
 };
 
 Game.prototype.listen = function (port) {
+  this.server.on('connected', this.join.bind(this));
+  this.server.on('disconnected', this.leave.bind(this));
   this.server.setPort(port).listen();
+
   return this;
 };
 

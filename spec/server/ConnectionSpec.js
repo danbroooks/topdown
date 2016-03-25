@@ -126,12 +126,12 @@ describe("Connection", function () {
   describe('.latency', function () {
 
     it("should return 0ms if _latency not set", function () {
-      var c = Connection({});
+      var c = Connection(socket_mock());
       expect(c.latency()).toEqual('0ms');
     });
 
     it("should return printable latency", function () {
-      var c = Connection({});
+      var c = Connection(socket_mock());
       c._latency = 200;
       expect(c.latency()).toEqual('200ms');
     });
