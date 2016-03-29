@@ -29,7 +29,7 @@ var Controls = function (win, doc) {
   this.__defineGetter__('keystream', function () {
     return keystream.skipDuplicates(function (a, b) {
       return _.xor(a, b).length == 0;
-    }).throttle(300);
+    }).throttle(100);
   });
 
   var mouse = Point(0, 0);
