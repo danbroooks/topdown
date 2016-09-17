@@ -1,27 +1,31 @@
 {
   "name": "topdown",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "description": "A 2D topdown game framework built with node.js",
   "scripts": {
     "test": "gulp jasmine"
   },
   "dependencies": {
-    "lodash": "^3.10.0",
-    "kefir": "^2.7.2",
+    "kefir": "^3.5.1",
+    "lodash": "^4.15.0",
+    "lodash.assign": "^4.2.0",
     "mime": "^1.3.4",
-    "socket.io-client": "^1.3.6",
-    "socket.io": "^1.3.6"
+    "socket.io": "^1.3.6",
+    "socket.io-client": "^1.3.6"
   },
   "devDependencies": {
-    "browserify": "^11.0.0",
+    "babel-preset-es2015": "^6.14.0",
+    "babel-preset-es2016": "^6.11.3",
+    "babelify": "^7.3.0",
+    "browserify": "^13.1.0",
     "gulp": "^3.9.0",
     "gulp-concat": "^2.6.0",
-    "gulp-istanbul": "^0.10.0",
+    "gulp-istanbul": "^1.1.1",
     "gulp-jasmine": "^2.0.1",
     "gulp-sass": "^2.0.4",
     "gulp-sourcemaps": "^1.5.2",
-    "gulp-streamify": "0.0.5",
-    "gulp-uglify": "^1.2.0",
+    "gulp-streamify": "1.0.2",
+    "gulp-uglify": "^2.0.0",
     "gulp-util": "^3.0.6",
     "jasmine-spec-reporter": "^2.4.0",
     "merge-stream": "^1.0.0",
