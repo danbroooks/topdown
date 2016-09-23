@@ -1,7 +1,6 @@
 var bind = require('lodash').bind;
 var EventEmitter = require('events').EventEmitter;
 var Server = require('./server/Server');
-var Build = require('./util/Factory').Build;
 
 var Game = function () {
   this.events = new EventEmitter();
@@ -36,6 +35,4 @@ Game.prototype.listen = function (port) {
   return this;
 };
 
-var Topdown = Build(Game);
-
-module.exports = Topdown();
+module.exports = new Game();
