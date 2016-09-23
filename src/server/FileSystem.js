@@ -35,8 +35,6 @@ var Factory = function () {
   return new FileSystem();
 };
 
-Factory.Constructor = FileSystem;
-
 Factory.Root = join(__dirname, '..', '..', 'public');
 
 Factory.Project = join(process.cwd(), 'public');
