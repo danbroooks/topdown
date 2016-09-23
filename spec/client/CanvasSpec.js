@@ -49,40 +49,6 @@ describe("Canvas", function () {
     });
   });
 
-  describe(".draw", function () {
-
-    beforeEach(function () {
-      this.canvas.renderShape = sinon.stub();
-
-      this.points = {
-        a: [ [10, 10], [20, 10], [10, 20] ],
-        b: [ [5, 10], [10, 5], [10, 10] ]
-      };
-
-      this.canvas.draw([
-        { points: this.points.a },
-        { points: this.points.b },
-      ]);
-    });
-
-    afterEach(function () {
-      this.canvas.renderShape.reset();
-    });
-
-    it("should render all shapes passed in, no more no less", function () {
-      var renderShape = this.canvas.renderShape;
-      expect(renderShape.calledTwice).toBeTruthy();
-      expect(renderShape.calledThrice).toBeFalsy();
-    });
-
-    it("should render shapes by forwarding to renderShape", function () {
-      var renderShape = this.canvas.renderShape;
-      expect(renderShape.firstCall.calledWith(this.points.a)).toBeTruthy();
-      expect(renderShape.secondCall.calledWith(this.points.b)).toBeTruthy();
-    });
-
-  });
-
   describe(".renderShape", function () {
 
     beforeEach(function () {

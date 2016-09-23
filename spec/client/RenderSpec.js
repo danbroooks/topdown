@@ -29,6 +29,41 @@ describe("Render", function () {
     });
   });
 
+  describe(".draw(canvas, shapes)", function () {
+
+    beforeEach(function () {
+      this.points = {
+        first: [ [10, 10], [20, 10], [10, 20] ],
+        second: [ [5, 10], [10, 5], [10, 10] ]
+      };
+
+      var shapes = [
+        { points: this.points.first },
+        { points: this.points.second },
+      ];
+
+      this.canvas = {};
+      this.canvas.renderShape = sinon.stub();
+
+      Render().draw(this.canvas, shapes);
+    });
+
+    afterEach(function () {
+      this.canvas.renderShape.reset();
+    });
+
+    it('should render all shapes passed in, no more no less', function () {
+      expect(this.canvas.renderShape.calledTwice).toBeTruthy();
+      expect(this.canvas.renderShape.calledThrice).toBeFalsy();
+    });
+
+    it('should render shapes by forwarding to renderShape', function () {
+      expect(this.canvas.renderShape.firstCall.calledWith(this.points.first)).toBeTruthy();
+      expect(this.canvas.renderShape.secondCall.calledWith(this.points.second)).toBeTruthy();
+    });
+
+  });
+
   describe(".addLayer(name)", function () {
 
     beforeEach(function () {

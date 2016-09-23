@@ -6,6 +6,12 @@ var Render = function (doc) {
   this.layers = {};
 };
 
+Render.prototype.draw = function (canvas, shapes) {
+  for (var i = 0; i < shapes.length; i++) {
+    canvas.renderShape(shapes[i].points);
+  }
+};
+
 Render.prototype.addLayer = function (name) {
   var body = this.document.getElementsByTagName('body')[0];
   var canvas = this.document.createElement('canvas');

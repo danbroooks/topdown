@@ -30,14 +30,6 @@ Canvas.prototype.setFillStyle = function (fill) {
   this.ctx().fillStyle = fill;
 };
 
-Canvas.prototype.draw = function (draw) {
-
-  for (var i = 0; i < draw.length; i++) {
-    var points = draw[i].points;
-    this.renderShape(points, '#FFFFFF', '#FFFFFF');
-  }
-};
-
 Canvas.prototype.renderShape = function (points, fill, stroke) {
 
   this.setStrokeStyle(stroke || DEFAULT_STROKE);
