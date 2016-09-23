@@ -98,11 +98,10 @@ describe("Client", function () {
       this.render = {
         refresh: sinon.stub(),
         getLayer: sinon.stub(),
-        addLayer: sinon.stub()
+        addLayer: sinon.stub(),
+        draw: sinon.stub(),
       };
-      this.canvas = {
-        draw: sinon.stub()
-      };
+      this.canvas = {};
       this.render.getLayer.returns(this.canvas);
       Client(this.render, null, this.network).setupRenderer();
     });
@@ -129,7 +128,7 @@ describe("Client", function () {
       this.network.on.yield(res);
       expect(this.render.refresh.called).toBeTruthy();
       expect(this.render.getLayer.calledWith(res.canvas)).toBeTruthy();
-      expect(this.canvas.draw.calledWith(res.data)).toBeTruthy();
+      expect(this.render.draw.calledWith(this.canvas, res.data)).toBeTruthy();
     });
   });
 });
