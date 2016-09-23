@@ -1,3 +1,5 @@
+'use strict';
+
 var _ = require('lodash');
 var http = require('http');
 var mime = require('mime');
@@ -84,14 +86,9 @@ Server.prototype.onDisconnect = function (connection) {
   this.events.emit('disconnected', connection);
 };
 
-var Factory = function (port) {
-  return new Server(port);
-};
+let self = (port) => new Server(port);
 
-Factory.Listen = function (port) {
-  return Factory(port).listen();
-};
+self.Listen = (port) => self(port).listen();
 
-Factory.Constructor = Server;
+module.exports = self;
 
-module.exports = Factory;

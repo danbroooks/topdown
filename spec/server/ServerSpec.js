@@ -39,14 +39,6 @@ describe("Server", function () {
     this.socketemit.reset();
   });
 
-  describe("Factory", function () {
-
-    it("should return new instance", function () {
-      expect(Server() instanceof Server.Constructor).toBeTruthy();
-    });
-
-  });
-
   describe("Constructor", function () {
 
     beforeEach(function () {
@@ -60,22 +52,22 @@ describe("Server", function () {
     });
 
     it("should parse the port argument as an int", function () {
-      var s = new Server.Constructor('12');
+      var s = Server('12');
       expect(s.port).toEqual(12);
     });
 
     it("should create http server", function () {
-      new Server.Constructor(88);
+      Server(88);
       expect(httpMock.createServer.calledOnce).toBeTruthy();
     });
 
     it("should bind requestHandler to http", function () {
-      var s = new Server.Constructor(88);
+      var s = Server(88);
       expect(httpMock.createServer.calledWith(s.httpRequestHandler)).toBeTruthy();
     });
 
     it("should bind a socket-io connection via the http object", function () {
-      var s = new Server.Constructor(88);
+      var s = Server(88);
       expect(socketio.calledWith(s.http)).toBeTruthy();
     });
   });
@@ -111,7 +103,7 @@ describe("Server", function () {
 
     it("should return server instance", function () {
       var s = this.server.listen();
-      expect(s instanceof Server.Constructor).toBeTruthy();
+      expect(s).toEqual(this.server);
     });
 
     it("should bind a new connection event", function () {
