@@ -63,7 +63,7 @@ describe("FileSystem", function () {
       };
 
       fsMock.readFile = function (path, o, cb) {
-        cb(path, 'hello world');
+        cb(undefined, 'hello world');
       };
     });
 
