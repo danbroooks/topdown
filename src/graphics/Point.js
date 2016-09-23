@@ -1,144 +1,110 @@
+'use strict';
+
 var _ = require('lodash');
-var Build = require('../util/Factory').Build;
 
-function negativeZero(n) {
-  return (n == 0 && (1 / n) !== Number.POSITIVE_INFINITY);;
+let negativeZero = (n) => (n == 0 && (1 / n) !== Number.POSITIVE_INFINITY);
+
+let normalise = (n) => {
+  return negativeZero(n) ? 0 : n;
 };
 
-var Point = function () {};
+let self = (x, y) => {
 
-Point.prototype.x = 0;
-Point.prototype.y = 0;
+  let invalidArgsError = () => new Error('Point was passed invalid arguments');
 
-Point.prototype.shift = function (x, y) {
-
-  if (_.isNumber(x) && _.isNumber(y)) {
-    this.x += x;
-    this.y += y;
-  } else if (x instanceof Point && _.isUndefined(y)) {
-    this.x += x.x;
-    this.y += x.y;
-  } else {
-    throw new Error('Invalid arguments passed to point.shift');
+  if (_.isNumber(x) && _.isUndefined(y)) {
+    throw invalidArgsError();
   }
 
-  return this;
-};
+  if (!y && _.isArray(x)) {
+    if (x.length != 2) {
+      throw invalidArgsError();
+    }
 
-Point.prototype.invert = function () {
-
-  if (this.x !== 0) {
-    this.x *= -1;
+    return self(x[0], x[1]);
+  } else if (_.isUndefined(x) && _.isUndefined(y)) {
+    return self(0, 0);
+  } else if (!self.isValid({ x, y })) {
+    throw invalidArgsError();
   }
 
-  if (this.y !== 0) {
-    this.y *= -1;
-  }
+  x = normalise(x);
+  y = normalise(y);
 
-  return this;
-};
+  let shift = (bx, by) => {
+    if (_.isNumber(bx) && _.isNumber(by)) {
+      return self(x + bx, y + by);
+    } else if (self.isValid(bx) && _.isUndefined(by)) {
+      return self(x + bx.x, y + bx.y);
+    } else {
+      throw new Error('Invalid arguments passed to point.shift');
+    }
+  };
 
-Point.prototype.rotate = function (axis, degrees) {
+  let invert = () => {
 
-  if (_.isUndefined(degrees)) {
-    if (!_.isNumber(axis)) {
+    if (x !== 0) {
+      x *= -1;
+    }
+
+    if (y !== 0) {
+      y *= -1;
+    }
+
+    return self(x, y);
+  };
+
+  let rotate = (axis, degrees) => {
+
+    if (_.isUndefined(degrees)) {
+      if (!_.isNumber(axis)) {
+        throw new Error('Invalid arguments passed to point.rotate');
+      }
+
+      return rotate(self(0, 0), axis);
+    }
+
+    if (!_.isNumber(degrees)) {
       throw new Error('Invalid arguments passed to point.rotate');
     }
 
-    degrees = axis;
-    axis = Factory(0, 0);
-  }
-
-  if (!_.isNumber(degrees)) {
-    throw new Error('Invalid arguments passed to point.rotate');
-  }
-
-  if (_.isArray(axis)) {
-    axis = Factory(axis);
-  }
-
-  if (false === axis instanceof Point) {
-    throw new Error('Invalid arguments passed to point.rotate');
-  }
-
-  var radians = degrees * (Math.PI / 180);
-
-  var cos = Math.cos(radians);
-  var sin = Math.sin(radians);
-
-  var transform = {};
-  transform.x = (this.x - axis.x);
-  transform.y = (this.y - axis.y);
-
-  var rotate = {
-    x: transform.x * cos - transform.y * sin,
-    y: transform.x * sin + transform.y * cos
-  };
-
-  this.x = Number((rotate.x + axis.x).toFixed(12));
-  this.y = Number((rotate.y + axis.y).toFixed(12));
-  this.clean();
-};
-
-Point.prototype.clean = function () {
-
-  if (negativeZero(this.x)) {
-    this.x = 0;
-  }
-
-  if (negativeZero(this.y)) {
-    this.y = 0;
-  }
-
-};
-
-var Factory = Build(Point, function (x, y) {
-
-  if (arguments.length > 2) {
-    throw new Error('Point was passed invalid arguments');
-  }
-
-  if (_.isNumber(x) && _.isUndefined(y)) {
-    throw new Error('Point was passed invalid arguments');
-  }
-
-  var opts = {};
-
-  if (!y && _.isArray(x)) {
-
-    if (x.length != 2) {
-      throw new Error('Point was passed invalid arguments');
+    if (_.isArray(axis)) {
+      return rotate(self(axis), degrees);
     }
 
-    opts.x = x[0];
-    opts.y = x[1];
+    if (!self.isValid(axis)) {
+      throw new Error('Invalid arguments passed to point.rotate');
+    }
 
-  } else if (Factory.isValid({ x, y })) {
+    var radians = degrees * (Math.PI / 180);
 
-    opts.x = x;
-    opts.y = y;
+    var cos = Math.cos(radians);
+    var sin = Math.sin(radians);
 
-  }
+    var transform = {};
+    transform.x = (x - axis.x);
+    transform.y = (y - axis.y);
 
-  return opts;
-});
+    var rotated = {
+      x: transform.x * cos - transform.y * sin,
+      y: transform.x * sin + transform.y * cos
+    };
 
-Factory.Clone = function (inst) {
-  if (inst instanceof Point) {
-    return Factory(inst.x, inst.y);
-  } else {
-    throw new Error('Point.Clone must be passed an instance of Point');
-  }
+    return self(
+      Number((rotated.x + axis.x).toFixed(12)),
+      Number((rotated.y + axis.y).toFixed(12))
+    );
+  };
+
+  return Object.freeze({
+    x,
+    y,
+    shift,
+    invert,
+    rotate
+  });
 };
 
-Factory.Add = function (a, b) {
-  return Factory.Clone(a).shift(b);
-};
+self.isValid = (point) => _.isObject(point) && _.isNumber(point.x) && _.isNumber(point.y)
 
-Factory.Invert = function (point) {
-  return Factory.Clone(point).invert();
-};
-
-Factory.isValid = (point) => _.isObject(point) && _.isNumber(point.x) && _.isNumber(point.y);
-
-module.exports = Factory;
+module.exports = self;
