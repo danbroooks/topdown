@@ -7,7 +7,7 @@ var buffer = require('vinyl-buffer');
 var uglify = require('gulp-uglify');
 var sourcemaps = require('gulp-sourcemaps');
 var gutil = require('gulp-util');
-var assign = require('lodash/object/assign');
+var assign = require('lodash').assign;
 
 var extenalDependencies = [
   'kefir',
@@ -37,6 +37,7 @@ function topdown() {
   var b = browserify(assign({}, opts, {
     entries: ['./client.js']
   }));
+  b.transform('babelify', { presets: ['es2015', 'es2016'] });
   b.external(extenalDependencies);
   return b;
 };

@@ -11,7 +11,7 @@ var Controls = function (win, doc) {
   win.onkeydown = function (key) {
     var config = self.config;
 
-    if (!config || _.contains(_.values(config), key.which)) {
+    if (!config || _.includes(_.values(config), key.which)) {
       keystate[key.which] = true;
     }
   };
