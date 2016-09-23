@@ -1,37 +1,44 @@
-var EventEmitter = require('events').EventEmitter;
-var Server = require('./server/Server');
+'use strict';
 
-var Game = function () {
-  this.events = new EventEmitter();
-  this.server = Server();
+let EventEmitter = require('events').EventEmitter;
+let _ = require('lodash');
+
+let server = require('./server/Server')();
+let events = new EventEmitter();
+
+let on = (event, listener) => {
+  events.on(event, listener.bind(self));
+
+  return self;
 };
 
-Game.prototype.on = function (event, listener) {
-  this.events.on(event, listener.bind(this));
-
-  return this;
+let join = (connection) => {
+  trigger('join', connection, server);
 };
 
-Game.prototype.join = function (connection) {
-  this.trigger('join', connection, this.server);
+let leave = (connection) => {
+  trigger('leave', connection, server);
 };
 
-Game.prototype.leave = function (connection) {
-  this.trigger('leave', connection, this.server);
+let trigger = _.flow(
+  events.emit.bind(events),
+  () => self
+);
+
+let listen = (port) => {
+  server.on('connected', join.bind(self));
+  server.on('disconnected', leave.bind(self));
+  server.setPort(port).listen();
+
+  return self;
 };
 
-Game.prototype.trigger = function () {
-  this.events.emit.apply(this.events, arguments);
+let self = Object.freeze({
+  on,
+  join,
+  leave,
+  trigger,
+  listen,
+});
 
-  return this;
-};
-
-Game.prototype.listen = function (port) {
-  this.server.on('connected', this.join.bind(this));
-  this.server.on('disconnected', this.leave.bind(this));
-  this.server.setPort(port).listen();
-
-  return this;
-};
-
-module.exports = new Game();
+module.exports = self;
