@@ -141,11 +141,11 @@ describe("Canvas", function () {
       canvas.renderShape(this.points);
 
       expect(
-        canvas.setStrokeStyle.calledWith(Constructor.DEFAULT_STROKE))
+        canvas.setStrokeStyle.calledWith('#FFFFFF'))
         .toBeTruthy();
 
       expect(
-        canvas.setFillStyle.calledWith(Constructor.DEFAULT_FILL))
+        canvas.setFillStyle.calledWith('#FFFFFF'))
         .toBeTruthy();
     });
 

@@ -1,10 +1,12 @@
+'use strict';
+
 var Build = require('../util/Factory').Build;
 
+const DEFAULT_STROKE = '#FFFFFF';
+
+const DEFAULT_FILL = '#FFFFFF';
+
 var Canvas = function () {};
-
-Canvas.DEFAULT_STROKE = '#FFFFFF';
-
-Canvas.DEFAULT_FILL = '#FFFFFF';
 
 Canvas.prototype.el = undefined;
 
@@ -38,16 +40,8 @@ Canvas.prototype.draw = function (draw) {
 
 Canvas.prototype.renderShape = function (points, fill, stroke) {
 
-  if (!stroke) {
-    stroke = Canvas.DEFAULT_STROKE;
-  }
-
-  if (!fill) {
-    fill = Canvas.DEFAULT_FILL;
-  }
-
-  this.setStrokeStyle(stroke);
-  this.setFillStyle(fill);
+  this.setStrokeStyle(stroke || DEFAULT_STROKE);
+  this.setFillStyle(fill || DEFAULT_FILL);
 
   var ctx = this.ctx();
 
@@ -55,8 +49,7 @@ Canvas.prototype.renderShape = function (points, fill, stroke) {
 
   for (var j = 0; j < points.length; j++) {
     var pts = points[j];
-    var lineTo = j ? ctx.lineTo : ctx.moveTo;
-    lineTo.call(ctx, pts[0], pts[1]);
+    (j ? ctx.lineTo : ctx.moveTo).call(ctx, pts[0], pts[1]);
   }
 
   ctx.closePath();
