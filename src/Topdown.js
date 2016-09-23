@@ -1,4 +1,3 @@
-var bind = require('lodash').bind;
 var EventEmitter = require('events').EventEmitter;
 var Server = require('./server/Server');
 
@@ -8,7 +7,7 @@ var Game = function () {
 };
 
 Game.prototype.on = function (event, listener) {
-  this.events.on(event, bind(listener, this));
+  this.events.on(event, listener.bind(this));
 
   return this;
 };
