@@ -259,5 +259,14 @@ describe("Point", function () {
     });
   });
 
+  describe('isValid', function () {
+    it('should validate numeric x & y values', function () {
+      expect(Point.isValid({ x: 10, y: 10 })).toBeTruthy();
+    });
 
+    it('should invalidate incorrect values', function () {
+      expect(Point.isValid(7)).toBeFalsy();
+      expect(Point.isValid(undefined)).toBeFalsy();
+    });
+  });
 });
