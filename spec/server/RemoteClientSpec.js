@@ -4,25 +4,31 @@ describe("RemoteClient", function () {
   var sinon = require('sinon');
   var RemoteClient = require('../../src/server/RemoteClient');
 
+  beforeEach(function () {
+    this.socket = {
+      id: 1234,
+      on: _.noop
+    };
+    this.client = RemoteClient(this.socket);
+  });
+
   describe("Factory", function () {
     it("should return new instance", function () {
-      expect(RemoteClient({
-        id: 1234
-      }) instanceof RemoteClient.Constructor).toBeTruthy();
+      expect(this.client instanceof RemoteClient.Constructor).toBeTruthy();
     });
 
     it("should gain id of socket passed", function () {
-      expect(RemoteClient({
-        id: 1234
-      }).id).toEqual(1234);
+      expect(this.client.id).toEqual(1234);
+    });
+
+    it('should add link to connection object', function () {
+      expect(this.client.connection).toEqual(this.socket);
     });
   });
 
   describe(".key(string)", function () {
     it("should translate string representation of a key into a keycode", function () {
-      var cl = RemoteClient({
-        id: 1234
-      });
+      var cl = this.client;
       var keymap = require('../../src/Keymap.js');
       _.forOwn(keymap, function (val, key) {
         expect(cl.key(key)).toEqual(val);
@@ -30,9 +36,7 @@ describe("RemoteClient", function () {
     });
 
     it("should throw an error when passed an invalid string", function () {
-      var cl = RemoteClient({
-        id: 1234
-      });
+      var cl = this.client;
 
       expect(function () {
         cl.key('some-invalid-string')
@@ -43,13 +47,12 @@ describe("RemoteClient", function () {
 
   describe("Socket forwarders", function () {
     beforeEach(function () {
-      this.socket = {id: 1234};
       this.socket.emit = sinon.stub();
     });
 
     describe(".addCanvas", function () {
       beforeEach(function () {
-        RemoteClient(this.socket).addCanvas('foreground');
+        this.client.addCanvas('foreground');
       });
 
       it("should call emit method on socket", function () {
@@ -61,14 +64,14 @@ describe("RemoteClient", function () {
       });
 
       it("should be chainable", function () {
-        var call_result = RemoteClient(this.socket).addCanvas('foreground');
-        expect(call_result instanceof RemoteClient.Constructor).toBeTruthy();
+        var call_result = this.client.addCanvas('foreground');
+        expect(call_result).toEqual(this.client);
       });
     });
 
     describe(".setControls", function () {
       beforeEach(function () {
-        RemoteClient(this.socket).setControls({ up: 35 });
+        this.client.setControls({ up: 35 });
       });
 
       it("should call emit method on socket", function () {
@@ -80,15 +83,15 @@ describe("RemoteClient", function () {
       });
 
       it("should be chainable", function () {
-        var call_result = RemoteClient(this.socket).setControls({ up: 35 });
-        expect(call_result instanceof RemoteClient.Constructor).toBeTruthy();
+        var call_result = this.client.setControls({ up: 35 });
+        expect(call_result).toEqual(this.client);
       });
     });
 
     describe(".render", function () {
       beforeEach(function () {
         this.points = { points: [ [ 32, 43], [ 50, 40 ] ] };
-        RemoteClient(this.socket).render('foreground', this.points);
+        this.client.render('foreground', this.points);
       });
 
       it("should call emit method on socket", function () {
@@ -104,18 +107,17 @@ describe("RemoteClient", function () {
       });
 
       it("should be chainable", function () {
-        var call_result = RemoteClient(this.socket).render(this.points);
-        expect(call_result instanceof RemoteClient.Constructor).toBeTruthy();
+        var call_result = this.client.render(this.points);
+        expect(call_result).toEqual(this.client);
       });
     });
 
     describe(".on", function () {
       beforeEach(function () {
-        this.socket = { on: _.noop };
         spyOn(this.socket, 'on');
 
-        this.someHandler = function () {};
-        RemoteClient(this.socket).on('keystream', this.someHandler);
+        this.someHandler = _.noop;
+        this.client.on('keystream', this.someHandler);
       });
 
       it("should forward event name and handler to socket", function () {
