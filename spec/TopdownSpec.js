@@ -17,12 +17,6 @@ describe("Topdown", function () {
     spyOn(server, 'listen');
   });
 
-  describe('Factory', function () {
-    it("should create an event emitter object for tracking game events", function () {
-      expect(this.game.events instanceof require('events').EventEmitter).toBeTruthy();
-    });
-  });
-
   describe('.on() / .trigger()', function () {
 
     it("should forward events on to event object", function (done) {
