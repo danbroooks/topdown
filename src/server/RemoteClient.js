@@ -51,5 +51,6 @@ module.exports = Build(RemoteClient, function (connection) {
 
   var opts = {};
   opts.id = connection.id;
+  opts.connection = connection;
   return opts;
 });

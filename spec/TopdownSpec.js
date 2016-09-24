@@ -1,4 +1,4 @@
-
+'use strict';
 var _ = require('lodash');
 var sinon = require('sinon');
 var proxyquire = require('proxyquire');
@@ -17,7 +17,7 @@ describe("Topdown", function () {
     spyOn(server, 'listen');
   });
 
-  describe('.on() / .trigger()', function () {
+  describe('on() / trigger()', function () {
 
     it("should forward events on to event object", function (done) {
 
@@ -42,7 +42,7 @@ describe("Topdown", function () {
     });
   });
 
-  describe('.listen(port)', function () {
+  describe('listen(port)', function () {
 
     beforeEach(function () {
       this.port = 80;
@@ -68,6 +68,36 @@ describe("Topdown", function () {
 
       expect(this.server.on.calls.argsFor(0)[0]).toEqual('connected');
       expect(this.server.on.calls.argsFor(1)[0]).toEqual('disconnected');
+    });
+  });
+
+  describe('join / leave', function () {
+    it('passes through client object', function (done) {
+      let s = this.server;
+      let connection = { client: {} };
+
+      this.game.on('join', (client, server) => {
+        expect(client).toEqual(connection.client);
+        done();
+      });
+
+      this.game.listen(80);
+
+      this.server.events.emit('connected', connection, s);
+    });
+
+    it('passes through server object', function (done) {
+      let s = this.server;
+      let connection = { client: {} };
+
+      this.game.on('join', (client, server) => {
+        expect(server).toEqual(s);
+        done();
+      });
+
+      this.game.listen(80);
+
+      this.server.events.emit('connected', connection, s);
     });
   });
 });
