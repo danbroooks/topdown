@@ -7,18 +7,18 @@ module.exports = (from, to) => {
     throw new Error('Vector constructor takes two Point objects.');
   }
 
+  let diff = () => ({ x: (from.x - to.x), y: (from.y - to.y) });
+
+  let to_degrees = (rad) => rad * (180 / Math.PI);
+
   let angle = () => {
-    let dy = from.y - to.y;
-    let dx = from.x - to.x;
-    let theta = Math.atan2(dy, dx) * -1; // calculate angle in radians
-    theta *= 180 / Math.PI; // convert rads to degs, range
-    return (270 + theta) % 360;
-  };
+    let d = diff();
+    return (270 + to_degrees(Math.atan2(d.y, d.x) * -1)) % 360;
+  }
 
   let length = () => {
-    let dx = from.x - to.x;
-    let dy = from.y - to.y;
-    return Math.sqrt(dx * dx + dy * dy);
+    let d = diff();
+    return Math.sqrt(d.x * d.x + d.y * d.y);
   };
 
   return Object.freeze({ angle, length });
