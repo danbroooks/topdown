@@ -1,17 +1,13 @@
-var Build = require('../util/Factory').Build;
-var Point = require('../graphics/Point');
+'use strict';
+
 var Vector = require('../graphics/Vector');
+var Point = require('../graphics/Point');
 
-var Collision = function () {};
+module.exports = (vectorA, vectorB) => {
 
-Collision.prototype.va = undefined;
-
-Collision.prototype.vb = undefined;
-
-Collision.prototype.getIntersectionPoint = function () {
-
-  var vectorA = this.va;
-  var vectorB = this.vb;
+  if (!Vector.Created(vectorA) || !Vector.Created(vectorB)) {
+    throw new Error('Invalid arguments passed to Collision, requires two Vectors');
+  }
 
   var s1_x, s1_y, s2_x, s2_y;
 
@@ -34,16 +30,3 @@ Collision.prototype.getIntersectionPoint = function () {
   // No collision
   return false;
 };
-
-var Factory = Build(Collision, function (va, vb) {
-  if (!Vector.Created(va) || !Vector.Created(vb)) {
-    throw new Error('Invalid arguments passed to Collision, requires two Vectors');
-  }
-
-  return {
-    va: va,
-    vb: vb
-  };
-});
-
-module.exports = Factory;
