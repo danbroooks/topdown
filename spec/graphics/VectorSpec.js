@@ -72,7 +72,42 @@ describe("Vector", function () {
       var angled = Vector(c, Point(700, 500)).length();
       expect(Math.round(angled * 100) / 100).toEqual(860.23);
     });
-
   });
+
+  describe("collision", function () {
+
+    it("should return false if no intersection is found", function () {
+      var va = Vector(
+        Point(-1, -1),
+        Point( 1, -1)
+      );
+
+      var vb = Vector(
+        Point( -1,  1 ),
+        Point(  1,  1 )
+      );
+
+      var c = va.collision(vb);
+      expect(c).toEqual(false);
+    });
+
+    it("should work out the intersection point of two vectors", function () {
+      var va = Vector(
+        Point(-1,  1),
+        Point( 1, -1)
+      );
+
+      var vb = Vector(
+        Point(-1, -1),
+        Point( 1,  1)
+      );
+
+      var c = va.collision(vb);
+
+      expect(c.x).toEqual(0);
+      expect(c.y).toEqual(0);
+    });
+  });
+
 
 });
