@@ -75,24 +75,61 @@ describe("Vector", function () {
     });
   });
 
-  describe("collision", function () {
+  describe('collision(vector)', function () {
+    it("should throw error when not passed vector object", function () {
+      var va = Vector(P(-1, -1), P( 1, -1));
+
+      expect(() => va.collision())
+        .toThrowError('Invalid argument passed to vector.collision(), requires Vector');
+    });
 
     it("should return false if no intersection is found", function () {
-      var va = Vector(P( -1, -1 ), P(  1, -1 ));
-      var vb = Vector(P( -1,  1 ), P(  1,  1 ));
+      var va = Vector(P(20, 20), P(20, 40));
+      var vb = Vector(P(30, 30), P(30, 50));
 
       var c = va.collision(vb);
       expect(c).toEqual(false);
     });
 
-    it("should work out the intersection point of two vectors", function () {
-      var va = Vector(P( -1,  1), P( 1, -1));
-      var vb = Vector(P( -1, -1), P( 1,  1));
+    it("should intersect two line segments", function () {
+      var va = Vector(P(0, 0), P(100, 100));
+      var vb = Vector(P(100, 0), P(0, 100));
+
+      var c1 = va.collision(vb);
+      expect(c1.x).toEqual(50);
+      expect(c1.y).toEqual(50);
+
+      var vc = Vector(P(5, 17), P(100, 100));
+      var vd = Vector(P(100, 29), P(8, 100));
+
+      var c2 = vc.collision(vd);
+      expect(rnd(c2.x)).toEqual(56.85);
+      expect(rnd(c2.y)).toEqual(62.3);
+    });
+
+    it('should not detect collison when lines are side by side', function () {
+      var va = Vector(P(0, 0), P(50, 50));
+      var vb = Vector(P(50, 50), P(100, 100));
+
+      expect(va.collision(vb)).toBeFalsy();
+    });
+
+    it('should detect collision when vectors are side by side but angled differently', function () {
+      var va = Vector(P(0, 0), P(25, 25));
+      var vb = Vector(P(25, 25), P(100, 75));
 
       var c = va.collision(vb);
-
-      expect(c.x).toEqual(0);
-      expect(c.y).toEqual(0);
+      expect(c.x).toEqual(25);
+      expect(c.y).toEqual(25);
     });
+
+    // it('overlap', function () {
+    //   var va = Vector(P(0, 0), P(75, 75));
+    //   var vb = Vector(P(25, 25), P(100, 100));
+
+    //   var c = va.collision(vb);
+    //   expect(c.x).toEqual(25);
+    //   expect(c.y).toEqual(25);
+    // });
   });
 });

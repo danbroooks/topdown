@@ -21,29 +21,55 @@ module.exports = (from, to) => {
     return Math.sqrt(d.x * d.x + d.y * d.y);
   };
 
+  let difference = (vector) => ({ x: from.x - vector.from.x, y: from.y - vector.from.y });
+
   let collision = (vector) => {
 
-    var s1_x, s1_y, s2_x, s2_y;
-
-    s1_x = to.x - from.x;
-    s1_y = to.y - from.y;
-    s2_x = vector.to.x - vector.from.x;
-    s2_y = vector.to.y - vector.from.y;
-
-    var s = (-s1_y * (from.x - vector.from.x) + s1_x * (from.y - vector.from.y)) / (-s2_x * s1_y + s1_x * s2_y);
-    var t = (s2_x * (from.y - vector.from.y) - s2_y * (from.x - vector.from.x)) / (-s2_x * s1_y + s1_x * s2_y);
-
-    if (s >= 0 && s <= 1 && t >= 0 && t <= 1) {
-      // Collision detected
-      return Point({
-        x: from.x + (t * s1_x),
-        y: from.y + (t * s1_y)
-      });
+    if (!vector) {
+      throw new Error('Invalid argument passed to vector.collision(), requires Vector');
     }
 
-    // No collision
+    let a1 = from;
+    let a2 = to;
+    let b1 = vector.from;
+    let b2 = vector.to;
+
+    var b2b1X = b2.x - b1.x;
+    var b2b1Y = b2.y - b1.y;
+    var a2a1X = a2.x - a1.x;
+    var a2a1Y = a2.y - a1.y;
+    var ab1X = a1.x - b1.x;
+    var ab1Y = a1.y - b1.y;
+
+    var u_b = b2b1Y * a2a1X - b2b1X * a2a1Y;
+    if (u_b == 0) {
+        if ((b2b1X * ab1Y - b2b1Y * ab1X) === 0 ||
+            (a2a1X * ab1Y - a2a1Y * ab1X) === 0) {
+
+            if (!(
+                a1.x < b1.x && a1.x < b2.x && a2.x < b1.x && a2.x < b2.x ||
+                a1.y < b1.y && a1.y < b2.y && a2.y < b1.y && a2.y < b2.y ||
+                a1.x > b1.x && a1.x > b2.x && a2.x > b1.x && a2.x > b2.x ||
+                a1.y > b1.y && a1.y > b2.y && a2.y > b1.y && a2.y > b2.y
+                )) {
+                return false;
+            }
+        }
+        return false;
+    }
+
+    var ua = (b2b1X * ab1Y - b2b1Y * ab1X) / u_b;
+    var ub = (a2a1X * ab1Y - a2a1Y * ab1X) / u_b;
+
+    if (0 <= ua && ua <= 1 && 0 <= ub && ub <= 1) {
+        return Point(
+          a1.x + ua * a2a1X,
+          a1.y + ua * a2a1Y
+        );
+    }
+
     return false;
   };
 
-  return Object.freeze({ angle, length, collision, from, to });
+  return Object.freeze({ from, to, angle, length, collision });
 };
