@@ -13,11 +13,11 @@ let on = (event, listener) => {
 };
 
 let join = (connection) => {
-  trigger('join', connection, server);
+  trigger('join', connection.client, server);
 };
 
 let leave = (connection) => {
-  trigger('leave', connection, server);
+  trigger('leave', connection.client, server);
 };
 
 let trigger = _.flow(
@@ -35,8 +35,6 @@ let listen = (port) => {
 
 let self = Object.freeze({
   on,
-  join,
-  leave,
   trigger,
   listen,
 });

@@ -1,61 +1,49 @@
 var sinon = require('sinon');
+var _ = require('lodash');
+var noop = _.noop;
 
-describe("Canvas", function () {
+describe('Canvas', function () {
 
   var Canvas = require('../../src/client/Canvas');
-  var noop = function () {};
 
-  function Canvas2DRenderingContext() {
-    return {
-      beginPath: noop,
-      lineTo: noop,
-      moveTo: noop,
-      closePath: noop,
-      fill: noop,
-      stroke: noop,
-      clearRect: noop
-    };
-  }
+  var RenderingContext2d = sinon.mock({
+    beginPath: noop,
+    lineTo: noop,
+    moveTo: noop,
+    closePath: noop,
+    fill: noop,
+    stroke: noop,
+    clearRect: noop,
+  });
 
   beforeEach(function () {
+
     this.el = {
       width: 480,
-      height: 360
+      height: 360,
+      getContext: () => RenderingContext2d.object
     };
+
     this.canvas = Canvas(this.el);
-    this.mockCTX = sinon.mock(Canvas2DRenderingContext());
   });
 
-  describe("Factory", function () {
+  afterEach(RenderingContext2d.restore);
 
-    it("should return new instance", function () {
-      expect(this.canvas instanceof Canvas.Constructor).toBeTruthy();
-    });
-
-    it("should store element passed as .el", function () {
-      expect(this.canvas.el).toEqual(this.el);
-    });
-  });
-
-  describe(".setWidth / .setHeight", function () {
-    it("should set a width on .el", function () {
+  describe('.setWidth / .setHeight', function () {
+    it('should set a width on el', function () {
       this.canvas.setWidth(20);
-      expect(this.canvas.el.width).toEqual(20);
+      expect(this.el.width).toEqual(20);
     });
 
-    it("should set a height on .el", function () {
+    it('should set a height on el', function () {
       this.canvas.setHeight(30);
-      expect(this.canvas.el.height).toEqual(30);
+      expect(this.el.height).toEqual(30);
     });
   });
 
-  describe(".renderShape", function () {
+  describe('.renderShape', function () {
 
     beforeEach(function () {
-      this.canvas.ctx = sinon.stub().returns(this.mockCTX.object);
-      this.canvas.setStrokeStyle = sinon.stub();
-      this.canvas.setFillStyle = sinon.stub();
-
       this.points = [
         [10, 20],
         [20, 10],
@@ -63,94 +51,62 @@ describe("Canvas", function () {
       ];
     });
 
-    afterEach(function () {
-      this.canvas.setStrokeStyle.reset();
-      this.canvas.setFillStyle.reset();
-    });
-
-    it("should only need to open and close path once", function () {
-      this.mockCTX.expects('beginPath').once();
-      this.mockCTX.expects('closePath').once();
+    it('should only need to open and close path once', function () {
+      RenderingContext2d.expects('beginPath').once();
+      RenderingContext2d.expects('closePath').once();
       this.canvas.renderShape(this.points);
-      this.mockCTX.verify();
+      RenderingContext2d.verify();
     });
 
-    it("should only need to fill and stroke once", function () {
-      this.mockCTX.expects('fill').once();
-      this.mockCTX.expects('stroke').once();
+    it('should only need to fill and stroke once', function () {
+      RenderingContext2d.expects('fill').once();
+      RenderingContext2d.expects('stroke').once();
       this.canvas.renderShape(this.points);
-      this.mockCTX.verify();
+      RenderingContext2d.verify();
     });
 
-    it("should use stroke and fill values passed in", function () {
-
-      var canvas = this.canvas;
+    it('should use stroke and fill values when they are passed in', function () {
       var fill = '#FF0000';
       var stroke = '#00FFFF';
 
-      canvas.renderShape(this.points, fill, stroke);
+      this.canvas.renderShape(this.points, fill, stroke);
 
-      expect(
-        canvas.setStrokeStyle.calledWith(stroke))
-        .toBeTruthy();
-
-      expect(
-        canvas.setFillStyle.calledWith(fill))
-        .toBeTruthy();
+      expect(RenderingContext2d.object.strokeStyle).toEqual(stroke);
+      expect(RenderingContext2d.object.fillStyle).toEqual(fill);
     });
 
-    it("should use stroke and fill defaults when nothing passed", function () {
+    it('should use stroke and fill defaults when nothing passed', function () {
+      this.canvas.renderShape(this.points);
 
-      var Constructor = Canvas.Constructor;
-      var canvas = this.canvas;
-
-      canvas.renderShape(this.points);
-
-      expect(
-        canvas.setStrokeStyle.calledWith('#FFFFFF'))
-        .toBeTruthy();
-
-      expect(
-        canvas.setFillStyle.calledWith('#FFFFFF'))
-        .toBeTruthy();
+      expect(RenderingContext2d.object.strokeStyle).toEqual('#FFFFFF');
+      expect(RenderingContext2d.object.fillStyle).toEqual('#FFFFFF');
     });
 
-    it("should loop through the passed in points rendering them to the context", function () {
+    it('should loop through the passed in points rendering them to the context', function () {
+      var points = _.map(this.points, (value) => ({ x: value[0], y: value[1] }));
+      var first = _.first(points);
+      var second = points[1];
+      var third = points[2];
 
-      var mock = this.mockCTX;
-      var pts = this.points;
-      var firstPoint = pts[0];
-
-      mock.expects('moveTo').once()
-        .withExactArgs(firstPoint[0], firstPoint[1]);
-
-      mock.expects('lineTo').once()
-        .withExactArgs(pts[1][0], pts[1][1]);
-
-      mock.expects('lineTo').once()
-        .withExactArgs(pts[2][0], pts[2][1]);
+      RenderingContext2d.expects('moveTo').once().withExactArgs(first.x, first.y);
+      RenderingContext2d.expects('lineTo').once().withExactArgs(second.x, second.y);
+      RenderingContext2d.expects('lineTo').once().withExactArgs(third.x, third.y);
 
       this.canvas.renderShape(this.points);
 
-      mock.verify();
+      RenderingContext2d.verify();
     });
   });
 
   describe('.clear', function () {
 
-    beforeEach(function () {
-      this.canvas.ctx = sinon.stub().returns(this.mockCTX.object);
-    });
-
-    it("should trigger 'clearRect' for size of canvas", function () {
-      var mock = this.mockCTX;
-
-      mock.expects('clearRect').once()
+    it('should trigger #clearRect for size of canvas', function () {
+      RenderingContext2d.expects('clearRect').once()
         .withExactArgs(0, 0, 480, 360);
 
       this.canvas.clear();
 
-      mock.verify();
+      RenderingContext2d.verify();
     });
   });
 });

@@ -1,34 +1,29 @@
+'use strict';
+
 describe("Vector", function () {
 
   var Vector = require('../../src/graphics/Vector');
   var Point = require('../../src/graphics/Point');
+  const CONSTRUCTOR_ERROR = 'Vector constructor takes two Point objects.';
 
-  describe("Factory", function () {
+  it("should accept two Point objects as parameters", function () {
+    expect(() => Vector(Point(), Point()))
+      .not.toThrowError(CONSTRUCTOR_ERROR);
+  });
 
-    it("should accept two Point objects as parameters", function () {
-      expect(function () {
-        Vector(Point(), Point());
-      }).not.toThrowError('Vector constructor takes two Point objects.');
-    });
+  it("should throw if passed erroneous parameters", function () {
+    expect(() => Vector(2, 'hello'))
+      .toThrowError(CONSTRUCTOR_ERROR);
+  });
 
-    it("should throw if passed erroneous parameters", function () {
-      expect(function () {
-        Vector(2, 'hello');
-      }).toThrowError('Vector constructor takes two Point objects.');
-    });
+  it("should throw if not passed any parameters", function () {
+    expect(Vector)
+      .toThrowError(CONSTRUCTOR_ERROR);
+  });
 
-    it("should throw if not passed any parameters", function () {
-      expect(function () {
-        Vector();
-      }).toThrowError('Vector constructor takes two Point objects.');
-    });
-
-    it("should throw if only passed one parameter", function () {
-      expect(function () {
-        Vector(Point())
-      }).toThrowError('Vector constructor takes two Point objects.');
-    });
-
+  it("should throw if only passed one parameter", function () {
+    expect(() => Vector(Point()))
+      .toThrowError(CONSTRUCTOR_ERROR);
   });
 
   describe(".angle()", function () {
@@ -77,7 +72,42 @@ describe("Vector", function () {
       var angled = Vector(c, Point(700, 500)).length();
       expect(Math.round(angled * 100) / 100).toEqual(860.23);
     });
-
   });
+
+  describe("collision", function () {
+
+    it("should return false if no intersection is found", function () {
+      var va = Vector(
+        Point(-1, -1),
+        Point( 1, -1)
+      );
+
+      var vb = Vector(
+        Point( -1,  1 ),
+        Point(  1,  1 )
+      );
+
+      var c = va.collision(vb);
+      expect(c).toEqual(false);
+    });
+
+    it("should work out the intersection point of two vectors", function () {
+      var va = Vector(
+        Point(-1,  1),
+        Point( 1, -1)
+      );
+
+      var vb = Vector(
+        Point(-1, -1),
+        Point( 1,  1)
+      );
+
+      var c = va.collision(vb);
+
+      expect(c.x).toEqual(0);
+      expect(c.y).toEqual(0);
+    });
+  });
+
 
 });
