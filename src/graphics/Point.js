@@ -113,7 +113,7 @@ var Factory = Build(Point, function (x, y) {
     opts.x = x[0];
     opts.y = x[1];
 
-  } else if (_.isNumber(x) && _.isNumber(y)) {
+  } else if (Factory.isValid({ x, y })) {
 
     opts.x = x;
     opts.y = y;
@@ -138,5 +138,7 @@ Factory.Add = function (a, b) {
 Factory.Invert = function (point) {
   return Factory.Clone(point).invert();
 };
+
+Factory.isValid = (point) => _.isObject(point) && _.isNumber(point.x) && _.isNumber(point.y);
 
 module.exports = Factory;
