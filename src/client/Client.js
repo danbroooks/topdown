@@ -1,50 +1,20 @@
-var Build = require('../util/Factory').Build;
+'use strict';
 
-var Client = function () {};
+module.exports = (render, controls, network) => {
 
-Client.prototype.render = undefined;
-Client.prototype.controls = undefined;
-Client.prototype.network = undefined;
+  let connect = (http) => {
+    network.connect(http);
 
-Client.prototype.connect = function (server) {
-  this.network.connect(server);
-  this.setupRenderer();
-  this.setupControls();
-};
+    network.on('addCanvas', render.addLayer);
 
-Client.prototype.setupControls = function () {
-  var network = this.network;
-  var controls = this.controls;
-
-  network.on('setControls', function (config) {
-    controls.configure(config);
-  });
-
-  controls.keystream.onValue(function (val) {
-    network.emit('keystream', val);
-  });
-};
-
-Client.prototype.setupRenderer = function () {
-  var network = this.network;
-  var render = this.render;
-
-  network.on('addCanvas', function (data) {
-    render.addLayer(data);
-  });
-
-  network.on('render', function (res) {
-    var canvas = render.getLayer(res.canvas);
-    render.refresh();
-    render.draw(canvas, res.data);
-  });
-};
-
-module.exports = Build(Client, function (render, controls, network) {
-  var obj = {
-    render: render,
-    controls: controls,
-    network: network
+    network.on('render', render.draw);
+    
+    network.on('setControls', controls.configure);
+    
+    controls.keystream.onValue(function (val) {
+      network.emit('keystream', val);
+    });
   };
-  return obj;
-});
+
+  return Object.freeze({ connect });
+};

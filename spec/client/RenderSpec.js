@@ -29,7 +29,7 @@ describe("Render", function () {
     });
   });
 
-  describe(".draw(canvas, shapes)", function () {
+  describe(".draw(data)", function () {
 
     beforeEach(function () {
       this.points = {
@@ -37,7 +37,7 @@ describe("Render", function () {
         second: [ [5, 10], [10, 5], [10, 10] ]
       };
 
-      var shapes = [
+      var data = [
         { points: this.points.first },
         { points: this.points.second },
       ];
@@ -45,11 +45,18 @@ describe("Render", function () {
       this.canvas = {};
       this.canvas.renderShape = sinon.stub();
 
-      Render().draw(this.canvas, shapes);
+      this.render = Render();
+      this.render.getLayer = sinon.stub().returns(this.canvas);
+      this.render.refresh = sinon.stub();
+      this.render.draw({ canvas: 'foreground', data });
     });
 
     afterEach(function () {
       this.canvas.renderShape.reset();
+    });
+
+    it('should refresh the canvas', function () {
+      expect(this.render.refresh.calledOnce).toBeTruthy();
     });
 
     it('should render all shapes passed in, no more no less', function () {

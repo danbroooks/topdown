@@ -6,7 +6,12 @@ var Render = function (doc) {
   this.layers = {};
 };
 
-Render.prototype.draw = function (canvas, shapes) {
+Render.prototype.draw = function (data) {
+  this.refresh();
+
+  var canvas = this.getLayer(data.canvas);
+  var shapes = data.data;
+
   for (var i = 0; i < shapes.length; i++) {
     canvas.renderShape(shapes[i].points);
   }
