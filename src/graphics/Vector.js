@@ -21,15 +21,9 @@ module.exports = (from, to) => {
     return Math.sqrt(d.x * d.x + d.y * d.y);
   };
 
-  let divisor = (vector) => {
-    let s1_x = to.x - from.x;
-    let s1_y = to.y - from.y;
-    let s2_x = vector.to.x - vector.from.x;
-    let s2_y = vector.to.y - vector.from.y;
-    return (-s2_x * s1_y + s1_x * s2_y);
-  };
-
   let diff2 = () => ({ x: (to.x - from.x), y: (to.y - from.y) });
+
+  let difference = (vector) => ({ x: from.x - vector.from.x, y: from.y - vector.from.y });
 
   let collision = (vector) => {
 
@@ -41,9 +35,10 @@ module.exports = (from, to) => {
     let s1_y = diff2().y;
     let s2_x = vector.diff2().x;
     let s2_y = vector.diff2().y;
+    let divisor = (-s2_x * s1_y + s1_x * s2_y);
 
-    var s = (-s1_y * (from.x - vector.from.x) + s1_x * (from.y - vector.from.y)) / (divisor(vector));
-    var t = (s2_x * (from.y - vector.from.y) - s2_y * (from.x - vector.from.x)) / (divisor(vector));
+    var s = (-s1_y * (difference(vector).x) + s1_x * (difference(vector).y)) / (divisor);
+    var t = (s2_x * (difference(vector).y) - s2_y * (difference(vector).x)) / (divisor);
 
     if (s >= 0 && s <= 1 && t >= 0 && t <= 1) {
       return Point({
