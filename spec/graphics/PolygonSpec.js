@@ -13,11 +13,13 @@ describe("Polygon", function () {
       }).toThrow();
     });
 
-    it("should throw when not passed an array of points", function () {
+    it("should throw when passed non array value", function () {
       expect(function () {
         Polygon(12);
       }).toThrow();
+    });
 
+    it("should throw when not passed an array of points", function () {
       expect(function () {
         Polygon([123, 3]);
       }).toThrow();
@@ -44,7 +46,7 @@ describe("Polygon", function () {
       ]);
 
       expect(poly.points.length).toBe(3);
-      expect(poly.points[2] instanceof Point.Constructor).toBeTruthy();
+      expect(Point.isValid(poly.points[2])).toBeTruthy();
     });
 
     it("should take an array of x/y pairs to construct", function () {
@@ -55,7 +57,7 @@ describe("Polygon", function () {
       ]);
 
       expect(arrPoly.points.length).toBe(3);
-      expect(arrPoly.points[2] instanceof Point.Constructor).toBeTruthy();
+      expect(Point.isValid(arrPoly.points[2])).toBeTruthy();
 
       expect(arrPoly.points[0].y).toEqual(0);
       expect(arrPoly.points[1].x).toEqual(20);
