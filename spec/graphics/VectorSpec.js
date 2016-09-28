@@ -78,7 +78,7 @@ describe("Vector", function () {
   describe("collision", function () {
 
     it("should return false if no intersection is found", function () {
-      var va = Vector(P(-1, -1), P( 1, -1));
+      var va = Vector(P( -1, -1 ), P(  1, -1 ));
       var vb = Vector(P( -1,  1 ), P(  1,  1 ));
 
       var c = va.collision(vb);
@@ -86,8 +86,8 @@ describe("Vector", function () {
     });
 
     it("should work out the intersection point of two vectors", function () {
-      var va = Vector(P(-1,  1), P( 1, -1));
-      var vb = Vector(P(-1, -1), P( 1,  1));
+      var va = Vector(P( -1,  1), P( 1, -1));
+      var vb = Vector(P( -1, -1), P( 1,  1));
 
       var c = va.collision(vb);
 

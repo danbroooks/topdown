@@ -19,8 +19,8 @@ Polygon.prototype.points = [];
 
 
 Polygon.prototype.rotate = function (deg) {
-  _.each(this.points, function (pt) {
-    pt.rotate(deg);
+  this.points = _.map(this.points, function (pt) {
+    return pt.rotate(deg);
   });
 };
 
