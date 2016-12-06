@@ -12,7 +12,7 @@ const Connection = require('./Connection');
 const Server = function (port) {
   const events = new EventEmitter();
 
-  this.connections = Connection.Collection();
+  const connections = this.connections = Connection.Collection();
 
   this.listen = function () {
     if (!this.port) {
@@ -64,20 +64,14 @@ const Server = function (port) {
   this.onConnected = function (socket) {
 
     var connection = Connection(socket);
-
-    this.connections.add(connection);
-
+    connections.add(connection);
     events.emit('connected', connection);
 
-    connection.on('disconnect', this.onDisconnect.bind(this, connection));
-  };
-
-  this.onDisconnect = function (connection) {
-    connection.emit('disconnected');
-
-    this.connections.remove(conn => conn === connection);
-
-    events.emit('disconnected', connection);
+    connection.on('disconnect', () => {
+      connection.emit('disconnected');
+      connections.remove(conn => conn === connection);
+      events.emit('disconnected', connection);
+    });
   };
 
   this.setPort(port);

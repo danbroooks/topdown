@@ -3,13 +3,9 @@ describe("Server", function () {
   var sinon = require('sinon');
   var proxyquire = require('proxyquire');
 
-  function hash() {
-    return Math.random().toString(36).substring(11);
-  }
+  const hash = () => Math.random().toString(36).substring(11);
 
-  function socket_mock() {
-    return { id: hash() };
-  }
+  const socket_mock = () => ({ id: hash(), on: sinon.stub(), emit: sinon.stub() });
 
   var httpMock = {};
   var fsMock = {};
@@ -184,17 +180,15 @@ describe("Server", function () {
     beforeEach(function () {
       this.server = Server();
 
-      this.server.connections = {
-        add: sinon.stub()
-      };
+      this.server.connections.add = sinon.stub();
 
       this.socket = socket_mock();
-      this.socket.on = sinon.stub();
     });
 
     afterEach(function () {
       this.server.connections.add.reset();
       this.socket.on.reset();
+      this.socket.emit.reset();
     });
 
     it('should add connection object passed into the list of connections', function () {
@@ -208,56 +202,15 @@ describe("Server", function () {
       expect(this.server.events.emit.called).toBeTruthy();
     });
 
-    it("should bind socket's disconnect event to 'onDisconnect'", function () {
-      this.server.onDisconnect = sinon.stub();
-
-      this.server.onConnected(this.socket);
-
-      expect(this.socket.on.called).toBeTruthy();
-      expect(this.socket.on.calledWith('disconnect')).toBeTruthy();
-
-      this.socket.on.yield();
-
-      expect(this.server.onDisconnect.called).toBeTruthy();
-    });
-
-  });
-
-  describe('.onDisconnect(socket)', function () {
-
-    beforeEach(function () {
-      this.server = Server();
-      this.connection = { emit: sinon.stub() };
-    });
-
-    it('should call remove on server\'s connection list', function () {
-      this.server.connections.remove = sinon.stub();
-      this.server.onDisconnect(this.connection);
-      expect(this.server.connections.remove.calledOnce).toBeTruthy();
-    });
-
-    // @todo: must be a better way of testing this than this test...
     it('should remove connection from connection list based on matching id property', function () {
-      var s = this.server;
+      this.server.connections.remove = sinon.stub();
+      this.server.onConnected(this.socket);
+      this.server.onConnected(socket_mock());
+      this.server.onConnected(socket_mock());
 
-      var validConn = socket_mock();
-      validConn.emit = sinon.stub();
+      this.socket.on.withArgs('disconnect').yield();
 
-      var invalidConn = socket_mock();
-      invalidConn.emit = sinon.stub();
-
-      var trigger = function () {};
-       s.connections.remove = function (cb) {
-        trigger = function () {
-          return cb(validConn);
-        };
-      };
-
-      s.onDisconnect(invalidConn);
-      expect(trigger()).not.toBeTruthy();
-
-      s.onDisconnect(validConn);
-      expect(trigger()).toBeTruthy();
+      this.server.connections.each(conn => expect(conn).toNotEqual(this.socket))
     });
   });
 });
