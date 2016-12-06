@@ -9,6 +9,32 @@ const EventEmitter = require('events').EventEmitter;
 const fs = require('./FileSystem');
 const Connection = require('./Connection');
 
+const httpRequestHandler = (req, res) => {
+
+  var uri = req.url;
+
+  uri = (uri == '/') ? '/index.html' : uri;
+
+  const paths = [ fs.Project, fs.Root ];
+
+  const success = (file, contents) => {
+    let headers = {
+      'Content-Type': mime.lookup(file),
+      'Content-Disposition': 'inline'
+    };
+
+    res.writeHead(200, headers);
+    res.end(contents);
+  };
+
+  const failure = err => {
+    res.writeHead(404);
+    res.end();
+  }
+
+  fs().find(uri, { paths, success, failure });
+};
+
 const Server = function (port) {
   const events = new EventEmitter();
 
@@ -27,32 +53,6 @@ const Server = function (port) {
   this.setPort = function (port) {
     this.port = parseInt(port, 10);
     return this;
-  };
-
-  this.httpRequestHandler = function (req, res) {
-
-    var uri = req.url;
-
-    uri = (uri == '/') ? '/index.html' : uri;
-
-    const paths = [ fs.Project, fs.Root ];
-
-    const success = (file, contents) => {
-      let headers = {
-        'Content-Type': mime.lookup(file),
-        'Content-Disposition': 'inline'
-      };
-
-      res.writeHead(200, headers);
-      res.end(contents);
-    };
-
-    const failure = err => {
-      res.writeHead(404);
-      res.end();
-    }
-
-    fs().find(uri, { paths, success, failure });
   };
 
   this.on = function (event, handler) {
@@ -74,7 +74,7 @@ const Server = function (port) {
   };
 
   this.setPort(port);
-  this.http = http.createServer(this.httpRequestHandler);
+  this.http = http.createServer(httpRequestHandler);
   this.socket = socketio(this.http);
   this.events = events;
 };

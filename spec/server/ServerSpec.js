@@ -39,29 +39,9 @@ describe("Server", function () {
 
   describe("Constructor", function () {
 
-    beforeEach(function () {
-
-      httpMock.createServer = sinon.stub();
-
-      httpMock.createServer.returns({
-        listen: sinon.stub()
-      });
-
-    });
-
     it("should parse the port argument as an int", function () {
       var s = Server('12');
       expect(s.port).toEqual(12);
-    });
-
-    it("should create http server", function () {
-      Server(88);
-      expect(httpMock.createServer.calledOnce).toBeTruthy();
-    });
-
-    it("should bind requestHandler to http", function () {
-      var s = Server(88);
-      expect(httpMock.createServer.calledWith(s.httpRequestHandler)).toBeTruthy();
     });
 
     it("should bind a socket-io connection via the http object", function () {
@@ -149,7 +129,7 @@ describe("Server", function () {
     });
   });
 
-  describe(".httpRequestHandler(req, res)", function () {
+  describe(".http", function () {
 
     beforeEach(function () {
 
@@ -163,23 +143,37 @@ describe("Server", function () {
         writeHead: sinon.stub(),
         end: sinon.stub()
       };
+
+      httpMock.createServer = sinon.stub();
+
+      httpMock.createServer.returns({
+        listen: sinon.stub()
+      });
+    });
+
+    it('should create httpServer with every created server', function () {
+      Server(88);
+      expect(httpMock.createServer.calledOnce).toBeTruthy();
     });
 
     it('should call fs.find to search for the file in the file system', function () {
       this.req.url = '/gunship.jpeg';
-      Server().httpRequestHandler(this.req, this.res);
+      Server();
+      httpMock.createServer.yield(this.req, this.res);
       expect(fsMock.find.called).toBeTruthy();
       expect(fsMock.find.calledWith('/gunship.jpeg')).toBeTruthy();
     });
 
     it("should look for index.html when passed '/'", function () {
       this.req.url = '/';
-      Server().httpRequestHandler(this.req, this.res);
+      Server();
+      httpMock.createServer.yield(this.req, this.res);
       expect(fsMock.find.calledWith('/index.html')).toBeTruthy();
     });
 
     it("should serve file when file is found", function () {
-      Server().httpRequestHandler(this.req, this.res);
+      Server();
+      httpMock.createServer.yield(this.req, this.res);
       var content = '<h1>Hello</h1>';
       fsMock.find.yieldTo('success', '/index.html', content);
       expect(this.res.writeHead.calledWith(200)).toBeTruthy();
@@ -187,11 +181,11 @@ describe("Server", function () {
     });
 
     it("should throw 404 when file is not found", function () {
-      Server().httpRequestHandler(this.req, this.res);
+      Server();
+      httpMock.createServer.yield(this.req, this.res);
       fsMock.find.yieldTo('failure');
       expect(this.res.writeHead.calledWith(404)).toBeTruthy();
     });
-
   });
 
   describe('.on', function () {
