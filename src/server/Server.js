@@ -20,7 +20,7 @@ const Server = function (port) {
     }
 
     this.http.listen(this.port);
-    this.socket.on('connection', _.bind(this.onConnected, this));
+    this.socket.on('connection', onConnected);
     return this;
   };
 
@@ -61,8 +61,7 @@ const Server = function (port) {
     return this;
   };
 
-  this.onConnected = function (socket) {
-
+  const onConnected = (socket) => {
     var connection = Connection(socket);
     connections.add(connection);
     events.emit('connected', connection);
