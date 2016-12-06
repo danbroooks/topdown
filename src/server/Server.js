@@ -1,17 +1,18 @@
 'use strict';
 
-var _ = require('lodash');
-var http = require('http');
-var mime = require('mime');
-var socketio = require('socket.io');
-var EventEmitter = require('events').EventEmitter;
+const _ = require('lodash');
+const http = require('http');
+const mime = require('mime');
+const socketio = require('socket.io');
+const EventEmitter = require('events').EventEmitter;
 
-var fs = require('./FileSystem');
-var Connection = require('./Connection');
+const fs = require('./FileSystem');
+const Connection = require('./Connection');
 
-var Server = function (port) {
+const Server = function (port) {
+  const events = new EventEmitter();
+
   this.connections = Connection.Collection();
-  this.events = new EventEmitter();
 
   this.listen = function () {
     if (!this.port) {
@@ -34,29 +35,28 @@ var Server = function (port) {
 
     uri = (uri == '/') ? '/index.html' : uri;
 
-    fs().find(uri, {
-      paths: [
-        fs.Project,
-        fs.Root
-      ],
-      success: function (file, contents) {
-        var headers = {
-          'Content-Type': mime.lookup(file),
-          'Content-Disposition': 'inline'
-        };
+    const paths = [ fs.Project, fs.Root ];
 
-        res.writeHead(200, headers);
-        res.end(contents);
-      },
-      failure: function (err) {
-        res.writeHead(404);
-        res.end();
-      }
-    });
+    const success = (file, contents) => {
+      let headers = {
+        'Content-Type': mime.lookup(file),
+        'Content-Disposition': 'inline'
+      };
+
+      res.writeHead(200, headers);
+      res.end(contents);
+    };
+
+    const failure = err => {
+      res.writeHead(404);
+      res.end();
+    }
+
+    fs().find(uri, { paths, success, failure });
   };
 
   this.on = function (event, handler) {
-    this.events.on(event, handler);
+    events.on(event, handler);
 
     return this;
   };
@@ -67,7 +67,7 @@ var Server = function (port) {
 
     this.connections.add(connection);
 
-    this.events.emit('connected', connection);
+    events.emit('connected', connection);
 
     connection.on('disconnect', this.onDisconnect.bind(this, connection));
   };
@@ -75,19 +75,18 @@ var Server = function (port) {
   this.onDisconnect = function (connection) {
     connection.emit('disconnected');
 
-    this.connections.remove(function (conn) {
-      return conn === connection;
-    });
+    this.connections.remove(conn => conn === connection);
 
-    this.events.emit('disconnected', connection);
+    events.emit('disconnected', connection);
   };
 
   this.setPort(port);
   this.http = http.createServer(this.httpRequestHandler);
   this.socket = socketio(this.http);
+  this.events = events;
 };
 
-let self = (port) => new Server(port);
+const self = (port) => new Server(port);
 
 self.Listen = (port) => self(port).listen();
 
