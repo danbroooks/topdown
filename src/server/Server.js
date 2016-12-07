@@ -73,7 +73,7 @@ const Server = function () {
   this.events = events;
 };
 
-const self = (port) => new Server(port);
+const self = () => new Server();
 
 module.exports = self;
 
