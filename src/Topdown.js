@@ -28,7 +28,7 @@ let trigger = _.flow(
 let listen = (port) => {
   server.on('connected', join.bind(self));
   server.on('disconnected', leave.bind(self));
-  server.setPort(port).listen();
+  server.listen(port);
 
   return self;
 };

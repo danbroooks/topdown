@@ -39,40 +39,19 @@ describe("Server", function () {
 
   describe("Constructor", function () {
 
-    it("should parse the port argument as an int", function () {
-      var s = Server('12');
-      expect(s.port).toEqual(12);
-    });
-
     it("should bind a socket-io connection via the http object", function () {
-      var s = Server(88);
+      var s = Server();
       expect(socketio.calledWith(s.http)).toBeTruthy();
-    });
-  });
-
-  describe(".Listen static method", function () {
-
-    it("should listen on the port passed", function () {
-
-      var listen = sinon.stub();
-
-      httpMock.createServer = sinon.stub();
-
-      httpMock.createServer.returns({
-        listen: listen
-      });
-
-      Server.Listen(8080);
-      expect(listen.calledWith(8080)).toBeTruthy();
     });
   });
 
   describe(".listen(port)", function () {
 
     beforeEach(function () {
-      this.server = Server(88);
+      this.server = Server();
       this.server.connections.add = sinon.stub();
       this.server.http.listen = sinon.stub();
+      spyOn(this.server.http, 'listen');
       this.socket = socket_mock();
     });
 
@@ -83,30 +62,35 @@ describe("Server", function () {
     });
 
     it("should listen on port passed", function () {
-      this.server.listen();
-      expect(this.server.http.listen.calledWith(88)).toBeTruthy();
+      this.server.listen(80);
+      expect(this.server.http.listen).toHaveBeenCalledWith(80);
+    });
+
+    it("should parse the port argument as an int", function () {
+      this.server.listen('8080');
+      expect(this.server.http.listen).toHaveBeenCalledWith(8080);
     });
 
     it("should return server instance", function () {
-      var s = this.server.listen();
+      var s = this.server.listen(80);
       expect(s).toEqual(this.server);
     });
 
     it("should bind a new connection event", function () {
-      this.server.listen();
+      this.server.listen(80);
       expect(this.socketon.calledOnce).toBeTruthy();
       expect(this.socketon.calledWith('connection')).toBeTruthy();
     });
 
     it('should add connection object passed into the list of connections', function () {
-      this.server.listen();
+      this.server.listen(80);
       this.server.socket.on.withArgs('connection').yield(this.socket);
       expect(this.server.connections.add.called).toBeTruthy();
     });
 
     it("should emit 'connected' event", function () {
       this.server.events.emit = sinon.stub();
-      this.server.listen();
+      this.server.listen(80);
       this.server.socket.on.withArgs('connection').yield(this.socket);
       expect(this.server.events.emit.called).toBeTruthy('events.emit was not called');
       expect(this.server.events.emit.calledWith('connected')).toBeTruthy("events.emit was not called with 'connected' argument");
@@ -117,7 +101,7 @@ describe("Server", function () {
       let connect = (conn) => this.server.socket.on.withArgs('connection').yield(conn)
 
       this.server.connections.remove = sinon.stub();
-      this.server.listen();
+      this.server.listen(80);
 
       connect(this.socket);
       connect(socket_mock());

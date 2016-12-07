@@ -54,9 +54,8 @@ describe("Topdown", function () {
     });
 
     it('should pass appropriate port to server listen', function () {
-      spyOn(this.server, 'setPort').and.returnValue(this.server);
       this.game.listen(this.port);
-      expect(this.server.setPort).toHaveBeenCalledWith(this.port);
+      expect(this.server.listen).toHaveBeenCalledWith(this.port);
     });
 
     it('should bind connect and disconnect event listeners', function () {

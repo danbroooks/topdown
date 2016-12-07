@@ -35,23 +35,18 @@ const httpRequestHandler = (req, res) => {
   fs().find(uri, { paths, success, failure });
 };
 
-const Server = function (port) {
+const Server = function () {
   const events = new EventEmitter();
 
   const connections = this.connections = Connection.Collection();
 
-  this.listen = function () {
-    if (!this.port) {
+  this.listen = function (port) {
+    if (!port) {
       throw new Error("Unable to start server, invalid port");
     }
 
-    this.http.listen(this.port);
+    this.http.listen(parseInt(port, 10));
     this.socket.on('connection', onConnected);
-    return this;
-  };
-
-  this.setPort = function (port) {
-    this.port = parseInt(port, 10);
     return this;
   };
 
@@ -73,15 +68,12 @@ const Server = function (port) {
     });
   };
 
-  this.setPort(port);
   this.http = http.createServer(httpRequestHandler);
   this.socket = socketio(this.http);
   this.events = events;
 };
 
 const self = (port) => new Server(port);
-
-self.Listen = (port) => self(port).listen();
 
 module.exports = self;
 
