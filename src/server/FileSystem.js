@@ -1,9 +1,9 @@
 'use strict'
 
-var fs = require('fs');
-var join = require('path').join;
+const fs = require('fs');
+const join = require('path').join;
 
-let exists = (path, success, failure) => {
+const exists = (path, success, failure) => {
   fs.exists(path, (doesExist) => {
     if (doesExist) {
       success();
@@ -13,7 +13,7 @@ let exists = (path, success, failure) => {
   });
 };
 
-let read = (path, then) => {
+const read = (path, then) => {
   fs.readFile(path, 'binary', (err, contents) => {
     if (err) {
       throw new Error(err);
@@ -23,14 +23,14 @@ let read = (path, then) => {
   });
 };
 
-let readifexists = (path, cb, fail) => {
-  let success = () => read(path, cb);
+const readifexists = (path, cb, fail) => {
+  const success = () => read(path, cb);
   exists(path, success, fail);
 };
 
-let find = (path, opts) => {
-  var location = opts.paths.shift();
-  var file = join(location, path);
+const find = (path, opts) => {
+  const location = opts.paths.shift();
+  const file = join(location, path);
 
   readifexists(file, (contents, path) => {
     opts.success(path, contents);
@@ -43,9 +43,7 @@ let find = (path, opts) => {
   });
 };
 
-module.exports = () => {
-  return Object.freeze({ find, exists });
-};
+module.exports = () => Object.freeze({ find, exists });
 
 module.exports.Root = join(__dirname, '..', '..', 'public');
 
