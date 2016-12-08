@@ -32,7 +32,7 @@ const listen = (port) => {
     trigger('leave', { client, server });
   });
 
-  server.setPort(port).listen();
+  server.listen(port);
 
   return self;
 };

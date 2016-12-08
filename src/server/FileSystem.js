@@ -1,29 +1,11 @@
-var fs = require('fs');
-var join = require("path").join;
+'use strict'
 
-var FileSystem = function () {};
+const fs = require('fs');
+const join = require('path').join;
 
-FileSystem.prototype.find = function (path, opts) {
-  var self = this;
-  var location = opts.paths.shift();
-  var file = join(location, path);
-  this.exists(file, function () {
-    fs.readFile(file, "binary", function (err, contents) {
-      opts.success(file, contents);
-    });
-  }, function () {
-    if (opts.paths.length) {
-      self.find(path, opts);
-    } else {
-      opts.failure();
-    }
-  });
-};
-
-FileSystem.prototype.exists = function (path, success, failure) {
-
-  fs.exists(path, function (exists) {
-    if (exists) {
+const exists = (path, success, failure) => {
+  fs.exists(path, (doesExist) => {
+    if (doesExist) {
       success();
     } else {
       failure();
@@ -31,14 +13,38 @@ FileSystem.prototype.exists = function (path, success, failure) {
   });
 };
 
-var Factory = function () {
-  return new FileSystem();
+const read = (path, then) => {
+  fs.readFile(path, 'binary', (err, contents) => {
+    if (err) {
+      throw new Error(err);
+    }
+
+    then(contents, path);
+  });
 };
 
-Factory.Constructor = FileSystem;
+const readifexists = (path, cb, fail) => {
+  const success = () => read(path, cb);
+  exists(path, success, fail);
+};
 
-Factory.Root = join(__dirname, '..', '..', 'public');
+const find = (path, opts) => {
+  const location = opts.paths.shift();
+  const file = join(location, path);
 
-Factory.Project = join(process.cwd(), 'public');
+  readifexists(file, (contents, path) => {
+    opts.success(path, contents);
+  }, () => {
+    if (opts.paths.length) {
+      find(path, opts);
+    } else {
+      opts.failure();
+    }
+  });
+};
 
-module.exports = Factory;
+module.exports = () => Object.freeze({ find, exists });
+
+module.exports.Root = join(__dirname, '..', '..', 'public');
+
+module.exports.Project = join(process.cwd(), 'public');

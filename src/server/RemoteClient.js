@@ -1,17 +1,8 @@
+'use strict'
+
 var Keymap = require('../Keymap');
-var Build = require('../util/Factory').Build;
 
-var connections = {};
-
-function io(rc) {
-  return connections[rc.id];
-}
-
-var RemoteClient = function () {};
-
-RemoteClient.prototype.id = undefined;
-
-RemoteClient.prototype.key = function (letter) {
+const key = (letter) => {
   if (Keymap[letter] !== undefined) {
     return Keymap[letter];
   }
@@ -20,37 +11,26 @@ RemoteClient.prototype.key = function (letter) {
   throw new Error(msg);
 };
 
-RemoteClient.prototype.addCanvas = function (name) {
-  io(this).emit('addCanvas', name);
-  return this;
+module.exports = (connection) => {
+  let id = connection.id;
+
+  const on = (event, handler) => {
+    connection.on(event, handler);
+    return rc;
+  };
+
+  const emit = (event, data) => {
+    connection.emit(event, data);
+    return rc;
+  };
+
+  const addCanvas = name => emit('addCanvas', name)
+
+  const setControls = config => emit('setControls', config);
+
+  const render = (canvas, data) => emit('render', { canvas, data })
+
+  const rc = Object.freeze({ id, on, key, addCanvas, setControls, render });
+
+  return rc;
 };
-
-RemoteClient.prototype.setControls = function (config) {
-  io(this).emit('setControls', config);
-  return this;
-};
-
-RemoteClient.prototype.render = function (canvas, data) {
-  io(this).emit('render', {
-    canvas: canvas,
-    data: data
-  });
-
-  return this;
-};
-
-RemoteClient.prototype.on = function (event, handler) {
-  io(this).on(event, handler);
-
-  return this;
-};
-
-module.exports = Build(RemoteClient, function (connection) {
-
-  connections[connection.id] = connection;
-
-  var opts = {};
-  opts.id = connection.id;
-  opts.connection = connection;
-  return opts;
-});

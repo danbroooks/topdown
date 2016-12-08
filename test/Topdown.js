@@ -55,13 +55,12 @@ test('`topdown.listen` should call `server.listen`', t => {
 });
 
 test('`topdown.listen` should pass provided port to `server.listen`', t => {
-  t.plan(2);
+  t.plan(1);
 
   let { game, server } = t.context;
   server.setPort = sinon.stub().returns(server);
   game.listen(80);
-  t.true(server.setPort.calledWith(80))
-  t.true(server.listen.called);
+  t.true(server.listen.calledWith(80));
 });
 
 test('`topdown.listen` should bind connect and disconnect event listeners', t => {

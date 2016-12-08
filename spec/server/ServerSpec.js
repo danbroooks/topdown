@@ -1,15 +1,13 @@
+'use strict';
+
 describe("Server", function () {
 
   var sinon = require('sinon');
   var proxyquire = require('proxyquire');
 
-  function hash() {
-    return Math.random().toString(36).substring(11);
-  }
+  const hash = () => Math.random().toString(36).substring(11);
 
-  function socket_mock() {
-    return { id: hash() };
-  }
+  const socket_mock = () => ({ id: hash(), on: sinon.stub(), emit: sinon.stub() });
 
   var httpMock = {};
   var fsMock = {};
@@ -39,93 +37,83 @@ describe("Server", function () {
     this.socketemit.reset();
   });
 
-  describe("Factory", function () {
-
-    it("should return new instance", function () {
-      expect(Server() instanceof Server.Constructor).toBeTruthy();
-    });
-
-  });
-
   describe("Constructor", function () {
 
-    beforeEach(function () {
-
-      httpMock.createServer = sinon.stub();
-
-      httpMock.createServer.returns({
-        listen: sinon.stub()
-      });
-
-    });
-
-    it("should parse the port argument as an int", function () {
-      var s = new Server.Constructor('12');
-      expect(s.port).toEqual(12);
-    });
-
-    it("should create http server", function () {
-      new Server.Constructor(88);
-      expect(httpMock.createServer.calledOnce).toBeTruthy();
-    });
-
-    it("should bind requestHandler to http", function () {
-      var s = new Server.Constructor(88);
-      expect(httpMock.createServer.calledWith(s.httpRequestHandler)).toBeTruthy();
-    });
-
     it("should bind a socket-io connection via the http object", function () {
-      var s = new Server.Constructor(88);
+      var s = Server();
       expect(socketio.calledWith(s.http)).toBeTruthy();
-    });
-  });
-
-  describe(".Listen static method", function () {
-
-    it("should listen on the port passed", function () {
-
-      var listen = sinon.stub();
-
-      httpMock.createServer = sinon.stub();
-
-      httpMock.createServer.returns({
-        listen: listen
-      });
-
-      Server.Listen(8080);
-      expect(listen.calledWith(8080)).toBeTruthy();
     });
   });
 
   describe(".listen(port)", function () {
 
     beforeEach(function () {
-      this.server = Server(88);
+      this.server = Server();
+      this.server.connections.add = sinon.stub();
       this.server.http.listen = sinon.stub();
+      spyOn(this.server.http, 'listen');
+      this.socket = socket_mock();
+    });
+
+    afterEach(function () {
+      this.server.connections.add.reset();
+      this.socket.on.reset();
+      this.socket.emit.reset();
     });
 
     it("should listen on port passed", function () {
-      this.server.listen();
-      expect(this.server.http.listen.calledWith(88)).toBeTruthy();
+      this.server.listen(80);
+      expect(this.server.http.listen).toHaveBeenCalledWith(80);
+    });
+
+    it("should parse the port argument as an int", function () {
+      this.server.listen('8080');
+      expect(this.server.http.listen).toHaveBeenCalledWith(8080);
     });
 
     it("should return server instance", function () {
-      var s = this.server.listen();
-      expect(s instanceof Server.Constructor).toBeTruthy();
+      var s = this.server.listen(80);
+      expect(s).toEqual(this.server);
     });
 
     it("should bind a new connection event", function () {
-      this.server.onConnected = sinon.stub();
-      this.server.listen();
+      this.server.listen(80);
       expect(this.socketon.calledOnce).toBeTruthy();
       expect(this.socketon.calledWith('connection')).toBeTruthy();
-      this.socketon.callArg(1);
-      expect(this.server.onConnected.called).toBeTruthy();
     });
 
+    it('should add connection object passed into the list of connections', function () {
+      this.server.listen(80);
+      this.server.socket.on.withArgs('connection').yield(this.socket);
+      expect(this.server.connections.add.called).toBeTruthy();
+    });
+
+    it("should emit 'connected' event", function () {
+      this.server.events.emit = sinon.stub();
+      this.server.listen(80);
+      this.server.socket.on.withArgs('connection').yield(this.socket);
+      expect(this.server.events.emit.called).toBeTruthy('events.emit was not called');
+      expect(this.server.events.emit.calledWith('connected')).toBeTruthy("events.emit was not called with 'connected' argument");
+    });
+
+    it('should remove connection from connection list based on matching id property', function () {
+
+      let connect = (conn) => this.server.socket.on.withArgs('connection').yield(conn)
+
+      this.server.connections.remove = sinon.stub();
+      this.server.listen(80);
+
+      connect(this.socket);
+      connect(socket_mock());
+      connect(socket_mock());
+
+      this.socket.on.withArgs('disconnect').yield();
+
+      this.server.connections.each(conn => expect(conn).toNotEqual(this.socket))
+    });
   });
 
-  describe(".httpRequestHandler(req, res)", function () {
+  describe(".http", function () {
 
     beforeEach(function () {
 
@@ -139,23 +127,37 @@ describe("Server", function () {
         writeHead: sinon.stub(),
         end: sinon.stub()
       };
+
+      httpMock.createServer = sinon.stub();
+
+      httpMock.createServer.returns({
+        listen: sinon.stub()
+      });
+    });
+
+    it('should create httpServer with every created server', function () {
+      Server(88);
+      expect(httpMock.createServer.calledOnce).toBeTruthy();
     });
 
     it('should call fs.find to search for the file in the file system', function () {
       this.req.url = '/gunship.jpeg';
-      Server().httpRequestHandler(this.req, this.res);
+      Server();
+      httpMock.createServer.yield(this.req, this.res);
       expect(fsMock.find.called).toBeTruthy();
       expect(fsMock.find.calledWith('/gunship.jpeg')).toBeTruthy();
     });
 
     it("should look for index.html when passed '/'", function () {
       this.req.url = '/';
-      Server().httpRequestHandler(this.req, this.res);
+      Server();
+      httpMock.createServer.yield(this.req, this.res);
       expect(fsMock.find.calledWith('/index.html')).toBeTruthy();
     });
 
     it("should serve file when file is found", function () {
-      Server().httpRequestHandler(this.req, this.res);
+      Server();
+      httpMock.createServer.yield(this.req, this.res);
       var content = '<h1>Hello</h1>';
       fsMock.find.yieldTo('success', '/index.html', content);
       expect(this.res.writeHead.calledWith(200)).toBeTruthy();
@@ -163,11 +165,11 @@ describe("Server", function () {
     });
 
     it("should throw 404 when file is not found", function () {
-      Server().httpRequestHandler(this.req, this.res);
+      Server();
+      httpMock.createServer.yield(this.req, this.res);
       fsMock.find.yieldTo('failure');
       expect(this.res.writeHead.calledWith(404)).toBeTruthy();
     });
-
   });
 
   describe('.on', function () {
@@ -184,88 +186,6 @@ describe("Server", function () {
       this.server.on('complete', done);
 
       this.server.events.emit('complete');
-    });
-  });
-
-  describe('.onConnected(socket)', function () {
-
-    beforeEach(function () {
-      this.server = Server();
-
-      this.server.connections = {
-        add: sinon.stub()
-      };
-
-      this.socket = socket_mock();
-      this.socket.on = sinon.stub();
-    });
-
-    afterEach(function () {
-      this.server.connections.add.reset();
-      this.socket.on.reset();
-    });
-
-    it('should add connection object passed into the list of connections', function () {
-      this.server.onConnected(this.socket);
-      expect(this.server.connections.add.called).toBeTruthy();
-    });
-
-    it("should emit 'connected' event", function () {
-      this.server.events.emit = sinon.stub();
-      this.server.onConnected(this.socket);
-      expect(this.server.events.emit.called).toBeTruthy();
-    });
-
-    it("should bind socket's disconnect event to 'onDisconnect'", function () {
-      this.server.onDisconnect = sinon.stub();
-
-      this.server.onConnected(this.socket);
-
-      expect(this.socket.on.called).toBeTruthy();
-      expect(this.socket.on.calledWith('disconnect')).toBeTruthy();
-
-      this.socket.on.yield();
-
-      expect(this.server.onDisconnect.called).toBeTruthy();
-    });
-
-  });
-
-  describe('.onDisconnect(socket)', function () {
-
-    beforeEach(function () {
-      this.server = Server();
-      this.connection = { emit: sinon.stub() };
-    });
-
-    it('should call remove on server\'s connection list', function () {
-      this.server.connections.remove = sinon.stub();
-      this.server.onDisconnect(this.connection);
-      expect(this.server.connections.remove.calledOnce).toBeTruthy();
-    });
-
-    // @todo: must be a better way of testing this than this test...
-    it('should remove connection from connection list based on matching id property', function () {
-      var s = this.server;
-
-      var validConn = socket_mock();
-      validConn.emit = sinon.stub();
-
-      var invalidConn = socket_mock();
-      invalidConn.emit = sinon.stub();
-
-      var trigger = function () {};
-       s.connections.remove = function (cb) {
-        trigger = function () {
-          return cb(validConn);
-        };
-      };
-
-      s.onDisconnect(invalidConn);
-      expect(trigger()).not.toBeTruthy();
-
-      s.onDisconnect(validConn);
-      expect(trigger()).toBeTruthy();
     });
   });
 });

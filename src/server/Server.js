@@ -1,97 +1,79 @@
-var _ = require('lodash');
-var http = require('http');
-var mime = require('mime');
-var socketio = require('socket.io');
-var EventEmitter = require('events').EventEmitter;
+'use strict';
 
-var fs = require('./FileSystem');
-var Connection = require('./Connection');
+const _ = require('lodash');
+const http = require('http');
+const mime = require('mime');
+const socketio = require('socket.io');
+const EventEmitter = require('events').EventEmitter;
 
-var Server = function (port) {
-  this.setPort(port);
-  this.connections = Connection.Collection();
-  this.http = http.createServer(this.httpRequestHandler);
-  this.events = new EventEmitter();
-  this.socket = socketio(this.http);
-};
+const fs = require('./FileSystem');
+const Connection = require('./Connection');
 
-Server.prototype.listen = function () {
-  if (!this.port) {
-    throw new Error("Unable to start server, invalid port");
-  }
-
-  this.http.listen(this.port);
-  this.socket.on('connection', _.bind(this.onConnected, this));
-  return this;
-};
-
-Server.prototype.setPort = function (port) {
-  this.port = parseInt(port, 10);
-  return this;
-};
-
-Server.prototype.httpRequestHandler = function (req, res) {
+const httpRequestHandler = (req, res) => {
 
   var uri = req.url;
 
   uri = (uri == '/') ? '/index.html' : uri;
 
-  fs().find(uri, {
-    paths: [
-      fs.Project,
-      fs.Root
-    ],
-    success: function (file, contents) {
-      var headers = {
-        'Content-Type': mime.lookup(file),
-        'Content-Disposition': 'inline'
-      };
+  const paths = [ fs.Project, fs.Root ];
 
-      res.writeHead(200, headers);
-      res.end(contents);
-    },
-    failure: function (err) {
-      res.writeHead(404);
-      res.end();
+  const success = (file, contents) => {
+    let headers = {
+      'Content-Type': mime.lookup(file),
+      'Content-Disposition': 'inline'
+    };
+
+    res.writeHead(200, headers);
+    res.end(contents);
+  };
+
+  const failure = err => {
+    res.writeHead(404);
+    res.end();
+  }
+
+  fs().find(uri, { paths, success, failure });
+};
+
+const Server = function () {
+  const events = new EventEmitter();
+
+  const connections = this.connections = Connection.Collection();
+
+  this.listen = function (port) {
+    if (!port) {
+      throw new Error("Unable to start server, invalid port");
     }
-  });
+
+    this.http.listen(parseInt(port, 10));
+    this.socket.on('connection', onConnected);
+    return this;
+  };
+
+  this.on = function (event, handler) {
+    events.on(event, handler);
+
+    return this;
+  };
+
+  const onConnected = (socket) => {
+    var connection = Connection(socket);
+    connections.add(connection);
+    events.emit('connected', connection);
+
+    connection.on('disconnect', () => {
+      connection.emit('disconnected');
+      connections.remove(conn => conn === connection);
+      events.emit('disconnected', connection);
+    });
+  };
+
+  this.http = http.createServer(httpRequestHandler);
+  this.socket = socketio(this.http);
+  this.events = events;
 };
 
-Server.prototype.on = function (event, handler) {
-  this.events.on(event, handler);
+const self = () => new Server();
 
-  return this;
-};
+module.exports = self;
 
-Server.prototype.onConnected = function (socket) {
-
-  var connection = Connection(socket);
-
-  this.connections.add(connection);
-
-  this.events.emit('connected', connection);
-
-  connection.on('disconnect', this.onDisconnect.bind(this, connection));
-};
-
-Server.prototype.onDisconnect = function (connection) {
-  connection.emit('disconnected');
-
-  this.connections.remove(function (conn) {
-    return conn === connection;
-  });
-
-  this.events.emit('disconnected', connection);
-};
-
-var Factory = function (port) {
-  return new Server(port);
-};
-
-Factory.Listen = function (port) {
-  return Factory(port).listen();
-};
-
-Factory.Constructor = Server;
-
-module.exports = Factory;

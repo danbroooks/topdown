@@ -19,12 +19,6 @@ describe("FileSystem", function () {
     this.failure.reset();
   });
 
-  describe("Factory", function () {
-    it("should return new instance", function () {
-      expect(FileSystem() instanceof FileSystem.Constructor).toBeTruthy();
-    });
-  });
-
   describe(".exists(path, success, failure)", function () {
 
     var fs = FileSystem();
@@ -69,7 +63,7 @@ describe("FileSystem", function () {
       };
 
       fsMock.readFile = function (path, o, cb) {
-        cb(path, 'hello world');
+        cb(undefined, 'hello world');
       };
     });
 

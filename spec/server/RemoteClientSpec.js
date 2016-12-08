@@ -12,20 +12,6 @@ describe("RemoteClient", function () {
     this.client = RemoteClient(this.socket);
   });
 
-  describe("Factory", function () {
-    it("should return new instance", function () {
-      expect(this.client instanceof RemoteClient.Constructor).toBeTruthy();
-    });
-
-    it("should gain id of socket passed", function () {
-      expect(this.client.id).toEqual(1234);
-    });
-
-    it('should add link to connection object', function () {
-      expect(this.client.connection).toEqual(this.socket);
-    });
-  });
-
   describe(".key(string)", function () {
     it("should translate string representation of a key into a keycode", function () {
       var cl = this.client;
