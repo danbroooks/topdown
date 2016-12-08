@@ -1,8 +1,10 @@
 'use strict';
-var gulp = require('gulp');
-var jasmine = require('gulp-jasmine');
-var SpecReporter  = require('jasmine-spec-reporter');
-var istanbul = require('gulp-istanbul');
+
+const gulp = require('gulp');
+const jasmine = require('gulp-jasmine');
+const ava = require('gulp-ava');
+const SpecReporter  = require('jasmine-spec-reporter');
+const istanbul = require('gulp-istanbul');
 
 function jasmineTask() {
   return gulp.src(['spec/**/*.js'])
@@ -24,5 +26,9 @@ gulp.task('istanbul', function () {
       jasmineTask()
         .pipe(istanbul.writeReports());
     });
+});
 
+gulp.task('ava', () => {
+  return gulp.src('test/**/*.js')
+    .pipe(ava({verbose: true}))
 });

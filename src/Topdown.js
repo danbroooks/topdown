@@ -1,42 +1,46 @@
 'use strict';
 
-let EventEmitter = require('events').EventEmitter;
-let _ = require('lodash');
+const server = require('./server/Server')();
 
-let server = require('./server/Server')();
-let events = new EventEmitter();
+let reducers = [];
+let state = [];
+let actions = [];
 
-let on = (event, listener) => {
-  events.on(event, listener.bind(self));
+const trigger = (action, payload) => {
+  actions = actions.concat({ action, payload });
 
-  return self;
+  if (actions.length === 1) while (actions.length) {
+    let a = actions[0];
+    state = reducers.reduce((s, reducer) => reducer(s, a), state);
+    actions.shift();
+  }
 };
 
-let join = (connection) => {
-  trigger('join', connection.client, server);
-};
+const listen = (port) => {
+  server.on('connected', (connection) => {
+    const client = connection.client;
 
-let leave = (connection) => {
-  trigger('leave', connection.client, server);
-};
+    trigger('join', { client, server });
 
-let trigger = _.flow(
-  events.emit.bind(events),
-  () => self
-);
+    client.on('keystream', (keys) => {
+      trigger('keystream', { client, keys });
+    })
+  });
 
-let listen = (port) => {
-  server.on('connected', join.bind(self));
-  server.on('disconnected', leave.bind(self));
+  server.on('disconnected', (connection) => {
+    const client = connection.client;
+    trigger('leave', { client, server });
+  });
+
   server.setPort(port).listen();
 
   return self;
 };
 
-let self = Object.freeze({
-  on,
+const self = Object.freeze({
   trigger,
   listen,
+  addReducer: reducer => reducers = reducers.concat(reducer),
 });
 
 module.exports = self;
