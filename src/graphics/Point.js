@@ -17,14 +17,14 @@ let self = (x, y) => {
 
     if (_.isArray(x) && x.length == 2) {
       return self(x[0], x[1]);
-    } else if (self.isValid(x)) {
+    } else if (self.validate(x)) {
       return self(x.x, x.y);
     } else {
       throw new Error(INVALID_ARGS);
     }
   }
 
-  if (!self.isValid({ x, y })) {
+  if (!self.validate({ x, y })) {
     throw new Error(INVALID_ARGS);
   }
 
@@ -34,7 +34,7 @@ let self = (x, y) => {
   let shift = (bx, by) => {
     if (_.isNumber(bx) && _.isNumber(by)) {
       return self(x + bx, y + by);
-    } else if (self.isValid(bx) && _.isUndefined(by)) {
+    } else if (self.validate(bx) && _.isUndefined(by)) {
       return self(x + bx.x, y + bx.y);
     } else {
       throw new Error('Invalid arguments passed to point.shift');
@@ -72,7 +72,7 @@ let self = (x, y) => {
       return rotate(self(axis), degrees);
     }
 
-    if (!self.isValid(axis)) {
+    if (!self.validate(axis)) {
       throw new Error('Invalid arguments passed to point.rotate');
     }
 
@@ -105,6 +105,6 @@ let self = (x, y) => {
   });
 };
 
-self.isValid = (point) => _.isObject(point) && _.isNumber(point.x) && _.isNumber(point.y)
+self.validate = (point) => _.isObject(point) && _.isNumber(point.x) && _.isNumber(point.y)
 
 module.exports = self;

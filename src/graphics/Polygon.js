@@ -1,75 +1,45 @@
 'use strict';
 
-var _ = require('lodash');
-var Build = require('../util/Factory').Build;
-var Point = require('./Point');
+const _ = require('lodash');
+const Point = require('./Point');
 
-var arrayOfPoints = (points) => _.isArray(points) && points.length && _.every(points, Point.isValid);
+const arrayOfPoints = (points) => _.isArray(points) && points.length && _.every(points, Point.validate);
 
-var Polygon = function () {
-
-};
-
-/**
- * Collection of points that make up the Polygon
- *
- * @type {Array}
- */
-Polygon.prototype.points = [];
-
-
-Polygon.prototype.rotate = function (deg) {
-  this.points = _.map(this.points, function (pt) {
-    return pt.rotate(deg);
-  });
-};
-
-/**
- *
- * @constructor
- */
-Polygon.ValidateRawArray = function (arr) {
+const ValidateRawArray = (arr) => {
   if (!_.isArray(arr)) {
     return false;
   }
 
-  return _.reduce(arr, function (carry, point) {
-    return _.isArray(point) && point.length == 2;
-  }, true);
+  return _.reduce(arr, (carry, point) => (_.isArray(point) && point.length == 2), true);
 };
 
-var Factory = Build(Polygon, function () {
+let self = module.exports = (points, position) => {
 
-  if (!arguments.length) {
-    throw new Error('Polygon was passed invalid number arguments');
-  }
-
-  let points = arguments[0];
-
-  if (!arrayOfPoints(points) && !Polygon.ValidateRawArray(points)) {
-    throw new Error('.points array contains incorrect number of values to make a point (2).');
-  }
-
-  let position = arguments[1];
-
-  if (position && !Point.isValid(position)) {
+  if (!points) {
     throw new Error();
   }
 
-  return {
-    points: _.map(points, (pt) => Point(pt)),
-    position: position
-  };
-});
+  if (!arrayOfPoints(points) && !ValidateRawArray(points)) {
+    throw new Error('.points array contains incorrect number of values to make a point (2).');
+  }
 
-/**
- * @param polygon
- * @returns {*}
- */
-Factory.Clone = function (polygon) {
-  return Factory(
-    _.map(polygon.points, _.identity)
+  if (position && !Point.validate(position)) {
+    throw new Error();
+  }
+
+  points = _.map(points, (pt) => Point(pt));
+
+  const rotate = (deg) => {
+    return self(_.map(points, pt => pt.rotate(deg)), position);
+  };
+
+  return Object.freeze({ points, position, rotate });
+};
+
+module.exports.Clone = (polygon) => {
+  return self(
+    _.map(polygon.points, p => p)
   );
 };
 
-module.exports = Factory;
+module.exports.ValidateRawArray = ValidateRawArray;

@@ -3,7 +3,7 @@
 let Point = require('./Point');
 
 module.exports = (from, to) => {
-  if (!Point.isValid(from) || !Point.isValid(to)) {
+  if (!Point.validate(from) || !Point.validate(to)) {
     throw new Error('Vector constructor takes two Point objects.');
   }
 
