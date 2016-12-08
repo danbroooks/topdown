@@ -1,14 +1,12 @@
 'use strict';
 
-var _ = require('lodash');
-var Build = require('../util/Factory').Build;
-var Point = require('./Point');
+const _ = require('lodash');
+const Build = require('../util/Factory').Build;
+const Point = require('./Point');
 
-var arrayOfPoints = (points) => _.isArray(points) && points.length && _.every(points, Point.isValid);
+const arrayOfPoints = (points) => _.isArray(points) && points.length && _.every(points, Point.validate);
 
-var Polygon = function () {
-
-};
+var Polygon = function () {};
 
 /**
  * Collection of points that make up the Polygon
@@ -52,7 +50,7 @@ var Factory = Build(Polygon, function () {
 
   let position = arguments[1];
 
-  if (position && !Point.isValid(position)) {
+  if (position && !Point.validate(position)) {
     throw new Error();
   }
 

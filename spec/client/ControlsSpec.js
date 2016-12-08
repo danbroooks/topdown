@@ -36,7 +36,7 @@ describe("Controls", function () {
     });
 
     it("should track user's mouse position as a point object", function () {
-      expect(Point.isValid(c.mouse)).toBeTruthy();
+      expect(Point.validate(c.mouse)).toBeTruthy();
     });
 
     it("should track user's mouse position when it moves", function () {

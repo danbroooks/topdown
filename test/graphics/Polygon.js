@@ -12,7 +12,7 @@ test('takes an array of points ([ Points... ])', t => {
   ]);
 
   t.is(poly.points.length, 3);
-  t.true(Point.isValid(poly.points[2]));
+  t.true(Point.validate(poly.points[2]));
 });
 
 test('takes an array of x/y pairs to construct', t => {
@@ -23,7 +23,7 @@ test('takes an array of x/y pairs to construct', t => {
   ]);
 
   t.is(arrPoly.points.length, 3);
-  t.true(Point.isValid(arrPoly.points[2]));
+  t.true(Point.validate(arrPoly.points[2]));
 
   t.is(arrPoly.points[0].y, 0);
   t.is(arrPoly.points[1].x, 20);
