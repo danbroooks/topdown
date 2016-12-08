@@ -1,5 +1,5 @@
 'use strict';
-// var _ = require('lodash');
+
 const sinon = require('sinon');
 const proxyquire = require('proxyquire');
 const { test } = require('ava');

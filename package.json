@@ -3,7 +3,7 @@
   "version": "0.2.0",
   "description": "A 2D topdown game framework built with node.js",
   "scripts": {
-    "test": "ava test/**/*.js",
+    "test": "ava test/**",
     "coverage": "nyc npm test"
   },
   "dependencies": {
