@@ -1,73 +1,45 @@
 'use strict';
 
 const _ = require('lodash');
-const Build = require('../util/Factory').Build;
 const Point = require('./Point');
 
 const arrayOfPoints = (points) => _.isArray(points) && points.length && _.every(points, Point.validate);
 
-var Polygon = function () {};
-
-/**
- * Collection of points that make up the Polygon
- *
- * @type {Array}
- */
-Polygon.prototype.points = [];
-
-
-Polygon.prototype.rotate = function (deg) {
-  this.points = _.map(this.points, function (pt) {
-    return pt.rotate(deg);
-  });
-};
-
-/**
- *
- * @constructor
- */
-Polygon.ValidateRawArray = function (arr) {
+const ValidateRawArray = (arr) => {
   if (!_.isArray(arr)) {
     return false;
   }
 
-  return _.reduce(arr, function (carry, point) {
-    return _.isArray(point) && point.length == 2;
-  }, true);
+  return _.reduce(arr, (carry, point) => (_.isArray(point) && point.length == 2), true);
 };
 
-var Factory = Build(Polygon, function () {
+let self = module.exports = (points, position) => {
 
-  if (!arguments.length) {
-    throw new Error('Polygon was passed invalid number arguments');
+  if (!points) {
+    throw new Error();
   }
 
-  let points = arguments[0];
-
-  if (!arrayOfPoints(points) && !Polygon.ValidateRawArray(points)) {
+  if (!arrayOfPoints(points) && !ValidateRawArray(points)) {
     throw new Error('.points array contains incorrect number of values to make a point (2).');
   }
-
-  let position = arguments[1];
 
   if (position && !Point.validate(position)) {
     throw new Error();
   }
 
-  return {
-    points: _.map(points, (pt) => Point(pt)),
-    position: position
-  };
-});
+  points = _.map(points, (pt) => Point(pt));
 
-/**
- * @param polygon
- * @returns {*}
- */
-Factory.Clone = function (polygon) {
-  return Factory(
-    _.map(polygon.points, _.identity)
+  const rotate = (deg) => {
+    return self(_.map(points, pt => pt.rotate(deg)), position);
+  };
+
+  return Object.freeze({ points, position, rotate });
+};
+
+module.exports.Clone = (polygon) => {
+  return self(
+    _.map(polygon.points, p => p)
   );
 };
 
-module.exports = Factory;
+module.exports.ValidateRawArray = ValidateRawArray;

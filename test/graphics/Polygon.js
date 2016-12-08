@@ -48,10 +48,6 @@ test('throws when passed an invalid array of point data', t => {
   ]));
 });
 
-test('returns new instance', t => {
-  t.true(Polygon([]) instanceof Polygon.Constructor);
-});
-
 test('can be cloned', t => {
   const poly = Polygon([
     [0, 0],
@@ -69,14 +65,14 @@ test('can be cloned', t => {
 });
 
 test('can be rotated', t => {
-  const poly = Polygon([
+  let poly = Polygon([
     [-5, -10],
     [-5, 10],
     [5, 10],
     [5, -10],
   ]);
 
-  poly.rotate(90);
+  poly = poly.rotate(90);
 
   t.is(poly.points[0].x, 10);
   t.is(poly.points[0].y, -5);
