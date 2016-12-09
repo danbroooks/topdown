@@ -22,7 +22,7 @@ const listen = (port) => {
 
     trigger('join', { client, server });
 
-    client.on('keystream', (keys) => {
+    connection.on('keystream', (keys) => {
       trigger('keystream', { client, keys });
     })
   });
