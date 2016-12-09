@@ -1,52 +1,35 @@
-var Collection = require('../util/Collection');
-var RemoteClient = require('./RemoteClient');
+'use strict';
 
-var connections = {};
+const Collection = require('../util/Collection');
+const RemoteClient = require('./RemoteClient');
 
-var Connection = function (socket) {
-  this.socket = socket;
-  this.id = socket.id;
-  this.client = RemoteClient(this);
-};
+let connections = {};
 
-Connection.prototype.on = function (event, handler) {
-  this.socket.on(event, handler);
-};
+const Factory = (socket) => {
+  const id = socket.id;
 
-Connection.prototype.emit = function (event, data) {
-  this.socket.emit(event, data);
-};
+  let conn = connections[id];
 
-Connection.prototype.ping = function () {
-  var start = Date.now();
-  var conn = this;
-  conn.emit('ping', function () {
-    conn._latency = (Date.now() - start);
-  });
-};
+  if (conn) return conn;
 
-Connection.prototype.latency = function () {
-  this._latency = this._latency || 0;
-  return this._latency + 'ms';
-};
+  const client = RemoteClient(socket);
 
-var Factory = function (socket) {
-  var conn = connections[socket.id];
+  const on = (event, handler) => socket.on(event, handler);
 
-  if (!conn) {
-    conn = new Connection(socket);
-    connections[socket.id] = conn;
-  }
+  const emit = (event, data) => socket.emit(event, data);
+
+  const ping = (cb) => {
+    const start = Date.now();
+    emit('ping', () => cb(Date.now() - start));
+  };
+
+  conn = Object.freeze({ id, on, emit, client, ping });
+
+  connections[id] = conn;
 
   return conn;
 };
 
-Factory.Collection = function () {
-  return Collection(function (o) {
-    return o instanceof Connection;
-  });
-};
-
-Factory.Constructor = Connection;
+Factory.Collection = () => Collection(_ => (connections[_.id]));
 
 module.exports = Factory;

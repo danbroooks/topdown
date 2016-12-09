@@ -1,7 +1,7 @@
 'use strict';
 
 const _ = require('lodash');
-const http = require('http');
+const createServer = require('http').createServer;
 const mime = require('mime');
 const socketio = require('socket.io');
 const EventEmitter = require('events').EventEmitter;
@@ -38,22 +38,21 @@ const httpRequestHandler = (req, res) => {
 const Server = function () {
   const events = new EventEmitter();
 
-  const connections = this.connections = Connection.Collection();
+  const connections = Connection.Collection();
 
-  this.listen = function (port) {
+  const listen = (port) => {
     if (!port) {
       throw new Error("Unable to start server, invalid port");
     }
 
-    this.http.listen(parseInt(port, 10));
-    this.socket.on('connection', onConnected);
-    return this;
+    http.listen(parseInt(port, 10));
+    socket.on('connection', onConnected);
+    return server;
   };
 
-  this.on = function (event, handler) {
+  const on = (event, handler) => {
     events.on(event, handler);
-
-    return this;
+    return server;
   };
 
   const onConnected = (socket) => {
@@ -68,9 +67,12 @@ const Server = function () {
     });
   };
 
-  this.http = http.createServer(httpRequestHandler);
-  this.socket = socketio(this.http);
-  this.events = events;
+  const http = createServer(httpRequestHandler);
+  const socket = socketio(http);
+
+  let server = Object.freeze({ events, connections, http, socket, on, listen });
+
+  return server;
 };
 
 const self = () => new Server();

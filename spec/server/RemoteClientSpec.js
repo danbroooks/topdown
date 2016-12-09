@@ -97,19 +97,5 @@ describe("RemoteClient", function () {
         expect(call_result).toEqual(this.client);
       });
     });
-
-    describe(".on", function () {
-      beforeEach(function () {
-        spyOn(this.socket, 'on');
-
-        this.someHandler = _.noop;
-        this.client.on('keystream', this.someHandler);
-      });
-
-      it("should forward event name and handler to socket", function () {
-        expect(this.socket.on).toHaveBeenCalled();
-        expect(this.socket.on).toHaveBeenCalledWith('keystream', this.someHandler);
-      });
-    });
   });
 });

@@ -9,7 +9,12 @@ describe("Server", function () {
 
   const socket_mock = () => ({ id: hash(), on: sinon.stub(), emit: sinon.stub() });
 
-  var httpMock = {};
+  var httpMock = {
+    createServer: sinon.stub().returns({
+      listen: sinon.stub()
+    })
+  };
+
   var fsMock = {};
 
   var socketio = sinon.stub();
@@ -128,15 +133,11 @@ describe("Server", function () {
         end: sinon.stub()
       };
 
-      httpMock.createServer = sinon.stub();
-
-      httpMock.createServer.returns({
-        listen: sinon.stub()
-      });
+      httpMock.createServer.reset();
     });
 
     it('should create httpServer with every created server', function () {
-      Server(88);
+      Server();
       expect(httpMock.createServer.calledOnce).toBeTruthy();
     });
 

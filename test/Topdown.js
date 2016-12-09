@@ -2,10 +2,12 @@
 
 const sinon = require('sinon');
 const proxyquire = require('proxyquire');
+const thaw = require('./helpers/thaw');
 const { test } = require('ava');
 
 test.beforeEach(t => {
-  let server = require('../src/server/Server')();
+
+  let server = thaw(require('../src/server/Server')());
 
   let client = {
     on: _ => _
@@ -15,12 +17,12 @@ test.beforeEach(t => {
     './server/Server': () => server
   });
 
-  server.listen = sinon.spy();
+  sinon.stub(server, 'listen');
 
   t.context = { game, server, client };
 });
 
-test('`topdown` handles events with `addReducer` and `trigger`', t => {
+test('handles events with addReducer and trigger', t => {
   let { game } = t.context;
 
   t.plan(1);
@@ -46,7 +48,7 @@ test('`topdown` handles events with `addReducer` and `trigger`', t => {
   game.trigger('test');
 });
 
-test('`topdown.listen` should call `server.listen`', t => {
+test('listens for http connections', t => {
   t.plan(1);
 
   let { game, server } = t.context;
@@ -54,7 +56,7 @@ test('`topdown.listen` should call `server.listen`', t => {
   t.true(server.listen.called);
 });
 
-test('`topdown.listen` should pass provided port to `server.listen`', t => {
+test('listens on port provided', t => {
   t.plan(1);
 
   let { game, server } = t.context;
@@ -63,7 +65,7 @@ test('`topdown.listen` should pass provided port to `server.listen`', t => {
   t.true(server.listen.calledWith(80));
 });
 
-test('`topdown.listen` should bind connect and disconnect event listeners', t => {
+test('binds connect and disconnect event listeners to server', t => {
   let { game, server } = t.context;
   server.on = sinon.spy();
   game.listen(80);
@@ -72,11 +74,11 @@ test('`topdown.listen` should bind connect and disconnect event listeners', t =>
   t.true(server.on.secondCall.calledWith('disconnected'))
 });
 
-test('Fires `join` event when client connects, passes through client & server object', t => {
+test('fires join event when client connects, passes through client & server object', t => {
   t.plan(2);
 
   let { game, server, client } = t.context;
-  let connection = { client };
+  let connection = { client, on: sinon.stub() };
 
   game.addReducer((state = [], { action, payload }) => {
     if (action === 'join') {
@@ -90,7 +92,19 @@ test('Fires `join` event when client connects, passes through client & server ob
   server.events.emit('connected', connection);
 });
 
-test('Fires `leave` event when client disconnects, passes through client & server object', t => {
+test('emits keystream event when joined, requesting keystream', t => {
+  t.plan(1);
+
+  let { game, server, client } = t.context;
+  let connection = { client, on: sinon.stub() };
+
+  game.listen(80);
+  server.events.emit('connected', connection);
+
+  t.true(connection.on.calledWith('keystream'));
+});
+
+test('fires leave event when client disconnects, passes through client & server object', t => {
   t.plan(2);
 
   let { game, server, client } = t.context;

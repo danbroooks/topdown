@@ -11,16 +11,10 @@ const key = (letter) => {
   throw new Error(msg);
 };
 
-module.exports = (connection) => {
-  let id = connection.id;
-
-  const on = (event, handler) => {
-    connection.on(event, handler);
-    return rc;
-  };
+module.exports = (socket) => {
 
   const emit = (event, data) => {
-    connection.emit(event, data);
+    socket.emit(event, data);
     return rc;
   };
 
@@ -30,7 +24,7 @@ module.exports = (connection) => {
 
   const render = (canvas, data) => emit('render', { canvas, data })
 
-  const rc = Object.freeze({ id, on, key, addCanvas, setControls, render });
+  const rc = Object.freeze({ key, addCanvas, setControls, render });
 
   return rc;
 };
